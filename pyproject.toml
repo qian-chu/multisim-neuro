@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meeg_simulator"
+version = "0.0.1"
+description = "A package for simulating MEEG data"
+authors = [
+    { name = "Alex Lepauvre", email = "alex.lepauvre@gmail.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = [
+    "numpy",
+    "scipy",
+    "mne",
+]
+
+[project.optional-dependencies]
+docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx"]
+
+[project.urls]
+Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
+Repository = "https://github.com/AlexLepauvre/meeg_simulator"
+
+[tool.setuptools]
+packages = ["meeg_simulator"]  # Automatically find the package
+
+[tool.setuptools.package-data]
+"meeg_simulator" = ["*.json", "*.csv"]  # Include additional data files if needed
