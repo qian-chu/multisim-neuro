@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx"]
+docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx", "ruff"]
 
 [project.urls]
 Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
