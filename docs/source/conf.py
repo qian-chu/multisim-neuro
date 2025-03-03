@@ -22,8 +22,14 @@ release = "0.0.1"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",       
+    "sphinx.ext.autosummary",   
+    "sphinx.ext.napoleon",      
+    "sphinx.ext.viewcode",  
     "nbsphinx",
 ]
+
+autosummary_generate = True  # Auto-generate API docs
 
 autoclass_content = "both"
 
