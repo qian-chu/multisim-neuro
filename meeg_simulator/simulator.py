@@ -18,9 +18,9 @@ def simulate_data(
     ch_type: Optional[str] = "eeg",
 ) -> List[np.ndarray]:
     """
-    Simulate epoched MEG/EEG data of the specified dimensions with multivariate patterns 
-    based on the specified experimental design. Effects can be specified to be present at 
-    specific time windows, constituting "ground truth" effects for testing sensitivity and 
+    Simulate epoched MEG/EEG data of the specified dimensions with multivariate patterns
+    based on the specified experimental design. Effects can be specified to be present at
+    specific time windows, constituting "ground truth" effects for testing sensitivity and
     specificity of analysis methods.
 
     Parameters
@@ -53,7 +53,7 @@ def simulate_data(
     spat_cov : np.ndarray, optional
         A spatial covariance matrix of shape [n_modes, n_modes]. If None, an identity
         matrix is used (i.e., no correlation across modes).
-    ch_type : string, optional, 
+    ch_type : string, optional,
         Type of the channels being simulated. Default eeg.
 
     Returns
@@ -75,17 +75,19 @@ def simulate_data(
             "There should be exactly one time window for each effect."
         )
     if effects_amp is None:
-        effects_amp = [1/32] * len(effects)
+        effects_amp = [1 / 32] * len(effects)
     n_trials, n_exp_conditions = X.shape
     # Make sure we get an integer sample count:
     n_samples = int(round((tmax - tmin) * sfreq)) - 1
     if n_samples <= 0:
-        raise ValueError("Derived 'n_samples' must be positive. Check tmin, tmax, and sfreq.")
-    
+        raise ValueError(
+            "Derived 'n_samples' must be positive. Check tmin, tmax, and sfreq."
+        )
+
     # Prepare info for epochs object in the end
-    info = mne.create_info([f"CH{n:03}" for n in range(n_modes)], 
-                           ch_types=[ch_type] * n_modes , 
-                           sfreq=sfreq)
+    info = mne.create_info(
+        [f"CH{n:03}" for n in range(n_modes)], ch_types=[ch_type] * n_modes, sfreq=sfreq
+    )
 
     # ---------------------------------------------------------------------
     # 2. Create a time vector for each epoch and the FIR (identity) within-trial design
@@ -142,7 +144,9 @@ def simulate_data(
     # Flatten cv to shape [n_samples*n_exp_conditions] so we can build a diagonal "selector"
     # and multiply it by random effects. That ensures only certain (time, condition) combos
     # end up non-zero.
-    cv_diagonal = np.diag(cv.T.flatten())  # shape => [n_samples*n_exp_conditions, n_samples*n_exp_conditions]
+    cv_diagonal = np.diag(
+        cv.T.flatten()
+    )  # shape => [n_samples*n_exp_conditions, n_samples*n_exp_conditions]
 
     # Each subject gets unique random draws
     for _ in range(n_subjects):
@@ -150,9 +154,13 @@ def simulate_data(
         # 7a. Build subject-specific effect weights
         #     shape => [n_samples*n_exp_conditions, n_modes]
         # --------------------------------------------------
-        # Generate beta parameters randomy sampled from a standard normal distribution, 
+        # Generate beta parameters randomy sampled from a standard normal distribution,
         # but using CV to set the effects to their desired effect sizes. Adding spatial covariance across effects
-        B = cv_diagonal @ np.random.randn(n_samples * n_exp_conditions, n_modes) @ spat_cov  # shape => [n_samples*n_exp_conditions, n_modes]
+        B = (
+            cv_diagonal
+            @ np.random.randn(n_samples * n_exp_conditions, n_modes)
+            @ spat_cov
+        )  # shape => [n_samples*n_exp_conditions, n_modes]
 
         # --------------------------------------------------
         # 7b. Combine with the full design
