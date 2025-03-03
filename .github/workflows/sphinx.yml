@@ -21,7 +21,7 @@ jobs:
 
     - name: Install Sphinx & Dependencies
       run: |
-        pip install sphinx sphinx-rtd-theme nbsphinx # Explicitly install Sphinx
+        pip install sphinx sphinx-rtd-theme nbsphinx pydata_sphinx_theme # Explicitly install Sphinx
         pip install .[full]
 
     - name: Install Ruff
