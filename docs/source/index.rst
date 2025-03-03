@@ -27,7 +27,6 @@ PyPI and conda releases are planned for the future.
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
 
    Tutorials <tutorials/index>
    API reference <reference/index>
