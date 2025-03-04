@@ -1,7 +1,5 @@
 :html_theme.sidebar_secondary.remove: true
 
-.. module:: meeg_simulator
-
 
 Welcome meeg_simulator documentation
 ============================
@@ -29,5 +27,5 @@ PyPI and conda releases are planned for the future.
    :maxdepth: 2
    :caption: Contents:
 
-   Tutorials <tutorials/index>
-   API reference <reference/using_meeg_simulator>
+   modules
+   tutorial/using_meeg_simulator
