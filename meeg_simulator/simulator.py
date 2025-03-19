@@ -19,14 +19,14 @@ def simulate_data(
 ) -> List[np.ndarray]:
     """Simulate epoched MEG/EEG data with multivariate patterns.
 
-    This function generates simulated EEG/MEG data with predefined experimental 
-    effects, allowing for controlled evaluation of analysis methods. Effects are 
-    introduced at specified time windows, serving as ground truth signals. 
+    This function generates simulated EEG/MEG data with predefined experimental
+    effects, allowing for controlled evaluation of analysis methods. Effects are
+    introduced at specified time windows, serving as ground truth signals.
     The data is structured into epochs, making it compatible with `mne.Epochs`.
 
-    The method used here is based on the approach implemented in **SPM's `DEMO_CVA_RSA.m`** 
-    function, originally developed by **Karl Friston and Peter Zeidman** [1]_. 
-    Our implementation extends their method by incorporating **time-resolved effects**, 
+    The method used here is based on the approach implemented in **SPM's `DEMO_CVA_RSA.m`**
+    function, originally developed by **Karl Friston and Peter Zeidman** [1]_.
+    Our implementation extends their method by incorporating **time-resolved effects**,
     allowing for dynamic experimental manipulations over specified time windows.
 
     Parameters
@@ -48,14 +48,14 @@ def simulate_data(
     t_win : array, shape (n_effects, 2)
         Time windows (start, end) in seconds where each experimental effect is nonzero.
     effects : array, shape (n_effects,)
-        Indices of the experimental conditions (columns of `X`) associated with 
+        Indices of the experimental conditions (columns of `X`) associated with
         time-locked effects. Each entry corresponds to a row in `t_win`.
     effects_amp : array, shape (n_effects,) | None, optional
-        Amplitudes of the effects. Effects are simulated by sampling beta parameters 
-        from a normal distribution across channels, with `effects_amp` defining 
+        Amplitudes of the effects. Effects are simulated by sampling beta parameters
+        from a normal distribution across channels, with `effects_amp` defining
         the variance of the distribution. Default is None (scales are uniform).
     spat_cov : array, shape (n_modes, n_modes) | None, optional
-        Spatial covariance matrix for the simulated data. If None, an identity 
+        Spatial covariance matrix for the simulated data. If None, an identity
         matrix is used (i.e., no cross-channel correlations).
     ch_type : str, optional
         Type of simulated channels, e.g., `'eeg'` or `'meg'`. Default is `'eeg'`.
@@ -72,10 +72,10 @@ def simulate_data(
 
     Notes
     -----
-    - This function follows the **same methodological principles** as `DEMO_CVA_RSA.m` from SPM, 
+    - This function follows the **same methodological principles** as `DEMO_CVA_RSA.m` from SPM,
       but extends it by adding time-resolved experimental effects.
     - The original implementation in SPM was developed by **Karl Friston and Peter Zeidman**.
-    - The generated data follows an event-related structure, suitable for 
+    - The generated data follows an event-related structure, suitable for
       classification and decoding analyses.
     - Effects are injected into selected experimental conditions based on `X`.
 
@@ -94,7 +94,7 @@ def simulate_data(
     >>> t_win = np.array([[0.2, 0.5]])  # Effect between 200-500 ms
     >>> effects = np.array([1])  # Effect corresponds to second column of X
     >>> epochs_list = simulate_data(X, noise_std=0.1, n_modes=64, n_subjects=20,
-    ...                             tmin=-0.2, tmax=0.8, sfreq=250, 
+    ...                             tmin=-0.2, tmax=0.8, sfreq=250,
     ...                             t_win=t_win, effects=effects)
     >>> print(len(epochs_list))  # Should return 20 subjects
 
@@ -226,6 +226,8 @@ def simulate_data(
         # Reshape to [N, T, C] (trials x time x channels)
         data = np.transpose(data.reshape([n_trials, len(t), n_modes]), [0, 2, 1])
 
-        simulated_data.append(mne.EpochsArray(data, info, tmin=tmin, reject_tmin=False, verbose='ERROR'))
+        simulated_data.append(
+            mne.EpochsArray(data, info, tmin=tmin, reject_tmin=False, verbose="ERROR")
+        )
 
     return simulated_data
