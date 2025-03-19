@@ -11,7 +11,7 @@ Here you can find tutorials on how to use the meg simulator
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   using_meeg_simulator
+   meeg_simulator
 

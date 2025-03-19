@@ -7,37 +7,54 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+sys.path.insert(0, os.path.abspath('../../'))
 
-# Get the absolute path to the root project folder
-sys.path.insert(0, os.path.abspath("../.."))  # Two levels up to reach the root
-
-project = "meeg simulator"
-copyright = "2025, Alex Lepauvre"
-author = "Alex Lepauvre"
-release = "0.0.1"
+project = 'meeg_simulator'
+copyright = '2025, Alex Lepauvre'
+author = 'Alex Lepauvre'
+release = '0.0.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode",
-    "nbsphinx",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'numpydoc',
+    'nbsphinx',
 ]
 
-autosummary_generate = True  # Auto-generate API docs
+templates_path = ['_templates']
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
-autoclass_content = "both"
 
-templates_path = ["_templates"]
-exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
+html_theme = 'pydata_sphinx_theme'
+html_static_path = ['_static']
+
+
+html_theme_options = {
+    "navigation_depth": 4,
+    "show_nav_level": 2,
+    "navbar_start": ["navbar-logo"],
+    "navbar_center": ["navbar-nav"],
+    "navbar_end": ["navbar-icon-links"],
+    "logo": {
+        "text": "MEEG Simulator"
+    },
+}
+nbsphinx_prolog = """
+.. raw:: html
+
+    <style>
+    /* Hide Notebook Titles from Sidebar */
+    .toctree-wrapper > ul { display: none !important; }
+    </style>
+"""
+
+
+# Fix potential warnings for notebooks
+nbsphinx_allow_errors = True

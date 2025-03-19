@@ -4,10 +4,13 @@ meeg\_simulator package
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 4
+meeg\_simulator.simulator module
+--------------------------------
 
-   meeg_simulator.simulator
+.. automodule:: meeg_simulator.simulator
+   :members:
+   :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
