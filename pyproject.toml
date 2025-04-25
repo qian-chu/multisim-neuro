@@ -14,11 +14,11 @@ readme = "README.md"
 dependencies = [
     "numpy",
     "scipy",
-    "mne",
 ]
 
 [project.optional-dependencies]
 docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx", "ruff"]
+export = ["mne", "eeglabio"]
 
 [project.urls]
 Homepage = "https://github.com/AlexLepauvre/meeg_simulator"

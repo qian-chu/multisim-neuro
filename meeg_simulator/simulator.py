@@ -1,28 +1,14 @@
 import numpy as np
-import mne
-from typing import List, Optional
+from typing import Optional
 
 
-def simulate_data(
-    X: np.ndarray,
-    noise_std: float,
-    n_modes: int,
-    n_subjects: int,
-    tmin: float,
-    tmax: float,
-    sfreq: float,
-    t_win: np.ndarray,
-    effects: np.ndarray,
-    effects_amp: Optional[np.ndarray] = None,
-    spat_cov: Optional[np.ndarray] = None,
-    ch_type: Optional[str] = "eeg",
-) -> List[np.ndarray]:
-    """Simulate epoched MEG/EEG data with multivariate patterns.
+class Simulator:
+    """
+    Simulate epoched MEG/EEG data with multivariate patterns.
 
-    This function generates simulated EEG/MEG data with predefined experimental
+    This class generates simulated EEG/MEG data with predefined experimental
     effects, allowing for controlled evaluation of analysis methods. Effects are
     introduced at specified time windows, serving as ground truth signals.
-    The data is structured into epochs, making it compatible with `mne.Epochs`.
 
     The method used here is based on the approach implemented in **SPM's `DEMO_CVA_RSA.m`**
     function, originally developed by **Karl Friston and Peter Zeidman** [1]_.
@@ -31,7 +17,7 @@ def simulate_data(
 
     Parameters
     ----------
-    X : array, shape (n_trials, n_experimental_conditions)
+    X : array, shape (n_epochs, n_experimental_conditions)
         Between-trial design matrix specifying experimental manipulations.
     noise_std : float
         Standard deviation of additive Gaussian noise (applied before spatial covariance).
@@ -60,10 +46,10 @@ def simulate_data(
     ch_type : str, optional
         Type of simulated channels, e.g., `'eeg'` or `'meg'`. Default is `'eeg'`.
 
-    Returns
-    -------
-    epochs_list : list of mne.Epochs
-        A list of `mne.Epochs` objects, one per subject (length `n_subjects`).
+    Attributes
+    ----------
+    data: list of np.ndarray of shape (n_epochs, n_modes, n_samples)
+        Simulated data for each subject.
 
     Raises
     ------
@@ -82,7 +68,7 @@ def simulate_data(
     References
     ----------
     .. [1] Friston, K., & Zeidman, P. "DEMO_CVA_RSA.m", Statistical Parametric Mapping (SPM).
-           Available at: https://github.com/spm/spm/blob/main/toolbox/DEM/DEMO_CVA_RSA.m
+    Available at: https://github.com/spm/spm/blob/main/toolbox/DEM/DEMO_CVA_RSA.m
 
     Examples
     --------
@@ -97,137 +83,181 @@ def simulate_data(
     ...                             tmin=-0.2, tmax=0.8, sfreq=250,
     ...                             t_win=t_win, effects=effects)
     >>> print(len(epochs_list))  # Should return 20 subjects
-
     """
-    # ---------------------------------------------------------------------
-    # 1. Check inputs & compute the number of samples
-    # ---------------------------------------------------------------------
-    if len(effects) != len(t_win):
-        raise ValueError(
-            "The dimension of 'effects' and 't_win' do not match! "
-            "There should be exactly one time window for each effect."
-        )
-    if effects_amp is None:
-        effects_amp = [1 / 32] * len(effects)
-    n_trials, n_exp_conditions = X.shape
-    # Make sure we get an integer sample count:
-    n_samples = int(round((tmax - tmin) * sfreq)) - 1
-    if n_samples <= 0:
-        raise ValueError(
-            "Derived 'n_samples' must be positive. Check tmin, tmax, and sfreq."
-        )
 
-    # Prepare info for epochs object in the end
-    info = mne.create_info(
-        [f"CH{n:03}" for n in range(n_modes)], ch_types=[ch_type] * n_modes, sfreq=sfreq
-    )
-
-    # ---------------------------------------------------------------------
-    # 2. Create a time vector for each epoch and the FIR (identity) within-trial design
-    # ---------------------------------------------------------------------
-    t = np.linspace(tmin, tmax, n_samples + 1, endpoint=False)[1:]
-    # Identity matrix => one column per time point
-    Xt = np.eye(n_samples)  # shape => [n_samples, n_samples]
-
-    # ---------------------------------------------------------------------
-    # 3. Build a "time activation" matrix for each experimental condition
-    #    cv.shape => [n_samples, n_exp_conditions]
-    #    This marks time points in which each condition is active (1) or inactive (0)
-    # ---------------------------------------------------------------------
-    cv = np.zeros((n_samples, n_exp_conditions), dtype=float)
-
-    for idx, eff_cond in enumerate(effects):
-        # Identify which samples lie in the desired time window
-        start_t, end_t = t_win[idx]
-        # Mask for t in [start_t, end_t]
-        mask = (t >= start_t) & (t <= end_t)
-        cv[mask, eff_cond] = effects_amp[idx]
-
-    # ---------------------------------------------------------------------
-    # 4. Construct the full design matrix with the Kronecker product
-    #    shape => [n_trials*n_samples, n_exp_conditions*n_samples]
-    # ---------------------------------------------------------------------
-    X_full = np.kron(X, Xt)
-
-    # ---------------------------------------------------------------------
-    # 5. Intercept term across all trials and samples
-    #    shape => [n_trials*n_samples, 1]
-    # ---------------------------------------------------------------------
-    X0 = np.ones((n_trials * n_samples, 1), dtype=float)
-
-    # ---------------------------------------------------------------------
-    # 6. Prepare or validate spatial covariance
-    #    - If none given, we assume an identity (no cross-mode correlation).
-    #    - Must be shape => [n_modes, n_modes] if provided.
-    # ---------------------------------------------------------------------
-    if spat_cov is None:
-        spat_cov = np.eye(n_modes)
-    else:
-        if spat_cov.shape != (n_modes, n_modes):
+    def __init__(
+        self,
+        X: np.ndarray,
+        noise_std: float,
+        n_modes: int,
+        n_subjects: int,
+        tmin: float,
+        tmax: float,
+        sfreq: float,
+        t_win: np.ndarray,
+        effects: np.ndarray,
+        effects_amp: Optional[np.ndarray] = None,
+        spat_cov: Optional[np.ndarray] = None,
+    ):
+        # ---------------------------------------------------------------------
+        # 1. Check inputs & compute the number of samples
+        # ---------------------------------------------------------------------
+        if len(effects) != len(t_win):
+            raise ValueError(
+                "The dimension of 'effects' and 't_win' do not match! "
+                "There should be exactly one time window for each effect."
+            )
+        if spat_cov is None:
+            spat_cov = np.eye(n_modes)  # Identity covariance matrix
+        elif spat_cov.shape != (n_modes, n_modes):
             raise ValueError(
                 f"spat_cov must be shape ({n_modes}, {n_modes}), "
                 f"but got {spat_cov.shape}."
             )
+        if effects_amp is None:
+            effects_amp = [1 / 32] * len(effects)
 
-    # ---------------------------------------------------------------------
-    # 7. Prepare outputs: loop over subjects and simulate data
-    # ---------------------------------------------------------------------
-    simulated_data = []
+        self.X = X
+        self.noise_std = noise_std
+        self.n_modes = n_modes
+        self.n_subjects = n_subjects
+        self.tmin = tmin
+        self.tmax = tmax
+        self.sfreq = sfreq
+        self.t_win = t_win
+        self.effects = effects
+        self.effects_amp = effects_amp
+        self.spat_cov = spat_cov
+        self.n_epochs, self.n_exp_conditions = X.shape
 
-    # Flatten cv to shape [n_samples*n_exp_conditions] so we can build a diagonal "selector"
-    # and multiply it by random effects. That ensures only certain (time, condition) combos
-    # end up non-zero.
-    cv_diagonal = np.diag(
-        cv.T.flatten()
-    )  # shape => [n_samples*n_exp_conditions, n_samples*n_exp_conditions]
+        # Make sure we get an integer sample count:
+        n_samples = int(round((tmax - tmin) * sfreq)) - 1
+        if n_samples <= 0:
+            raise ValueError(
+                "Derived 'n_samples' must be positive. Check tmin, tmax, and sfreq."
+            )
 
-    # Each subject gets unique random draws
-    for _ in range(n_subjects):
-        # --------------------------------------------------
-        # 7a. Build subject-specific effect weights
-        #     shape => [n_samples*n_exp_conditions, n_modes]
-        # --------------------------------------------------
-        # Generate beta parameters randomy sampled from a standard normal distribution,
-        # but using CV to set the effects to their desired effect sizes. Adding spatial covariance across effects
-        B = (
-            cv_diagonal
-            @ np.random.randn(n_samples * n_exp_conditions, n_modes)
-            @ spat_cov
-        )  # shape => [n_samples*n_exp_conditions, n_modes]
+        # ---------------------------------------------------------------------
+        # 2. Create a time vector for each epoch and the FIR (identity) within-trial design
+        # ---------------------------------------------------------------------
+        t = np.linspace(tmin, tmax, n_samples + 1, endpoint=False)[1:]
+        # Identity matrix => one column per time point
+        Xt = np.eye(n_samples)  # shape => [n_samples, n_samples]
 
-        # --------------------------------------------------
-        # 7b. Combine with the full design
-        #     shape => [n_trials*n_samples, n_modes]
-        # --------------------------------------------------
-        data = X_full @ B
+        # ---------------------------------------------------------------------
+        # 3. Build a "time activation" matrix for each experimental condition
+        #    cv.shape => [n_samples, self.n_exp_conditions]
+        #    This marks time points in which each condition is active (1) or inactive (0)
+        # ---------------------------------------------------------------------
+        cv = np.zeros((n_samples, self.n_exp_conditions), dtype=float)
 
-        # --------------------------------------------------
-        # 7c. Add intercept
-        #     shape => [n_trials*n_samples, n_modes]
-        # --------------------------------------------------
-        B0 = np.random.randn(1, n_modes) / 16.0
-        intercept = X0 @ B0
-        data += intercept
+        for idx, eff_cond in enumerate(effects):
+            # Identify which samples lie in the desired time window
+            start_t, end_t = t_win[idx]
+            # Mask for t in [start_t, end_t]
+            mask = (t >= start_t) & (t <= end_t)
+            cv[mask, eff_cond] = effects_amp[idx]
 
-        # --------------------------------------------------
-        # 7d. Add noise (spatially correlated)
-        # --------------------------------------------------
-        noise = np.random.randn(n_trials * n_samples, n_modes)
-        # Apply spatial covariance
-        noise = noise @ spat_cov
-        noise *= noise_std
+        # ---------------------------------------------------------------------
+        # 4. Construct the full design matrix with the Kronecker product
+        #    shape => [n_epochs*n_samples, self.n_exp_conditions*n_samples]
+        # ---------------------------------------------------------------------
+        X_full = np.kron(X, Xt)
 
-        data += noise
+        # ---------------------------------------------------------------------
+        # 5. Intercept term across all trials and samples
+        #    shape => [n_epochs*n_samples, 1]
+        # ---------------------------------------------------------------------
+        X0 = np.ones((self.n_epochs * n_samples, 1), dtype=float)
 
-        # --------------------------------------------------
-        # 7e. Store simulated data for this subject
-        # --------------------------------------------------
-        # Reshape the data:
-        # Reshape to [N, T, C] (trials x time x channels)
-        data = np.transpose(data.reshape([n_trials, len(t), n_modes]), [0, 2, 1])
+        # ---------------------------------------------------------------------
+        # 6. Prepare outputs: loop over subjects and simulate data
+        # ---------------------------------------------------------------------
+        self.data = []
 
-        simulated_data.append(
-            mne.EpochsArray(data, info, tmin=tmin, reject_tmin=False, verbose="ERROR")
+        # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
+        # and multiply it by random effects. That ensures only certain (time, condition) combos
+        # end up non-zero.
+        cv_diagonal = np.diag(
+            cv.T.flatten()
+        )  # shape => [n_samples*self.n_exp_conditions, n_samples*self.n_exp_conditions]
+
+        # Each subject gets unique random draws
+        for _ in range(n_subjects):
+            # --------------------------------------------------
+            # 7a. Build subject-specific effect weights
+            #     shape => [n_samples*self.n_exp_conditions, n_modes]
+            # --------------------------------------------------
+            # Generate beta parameters randomy sampled from a standard normal distribution,
+            # but using CV to set the effects to their desired effect sizes. Adding spatial covariance across effects
+            B = (
+                cv_diagonal
+                @ np.random.randn(n_samples * self.n_exp_conditions, n_modes)
+                @ spat_cov
+            )  # shape => [n_samples*self.n_exp_conditions, n_modes]
+
+            # --------------------------------------------------
+            # 7b. Combine with the full design
+            #     shape => [n_epochs*n_samples, n_modes]
+            # --------------------------------------------------
+            sub_data = X_full @ B
+
+            # --------------------------------------------------
+            # 7c. Add intercept
+            #     shape => [n_epochs*n_samples, n_modes]
+            # --------------------------------------------------
+            B0 = np.random.randn(1, n_modes) / 16.0
+            intercept = X0 @ B0
+            sub_data += intercept
+
+            # --------------------------------------------------
+            # 7d. Add noise (spatially correlated)
+            # --------------------------------------------------
+            noise = np.random.randn(self.n_epochs * n_samples, n_modes)
+            # Apply spatial covariance
+            noise = noise @ spat_cov
+            noise *= noise_std
+
+            sub_data += noise
+
+            # --------------------------------------------------
+            # 7e. Store simulated data for this subject
+            # --------------------------------------------------
+            # Reshape the data:
+            # Reshape to [N, T, C] (trials x time x channels)
+            sub_data = np.transpose(
+                sub_data.reshape([self.n_epochs, len(t), n_modes]), [0, 2, 1]
+            )
+            self.data.append(sub_data)
+
+    def export_to_mne(self, ch_type: str = "eeg") -> list:
+        """
+        Export the simulated data to MNE-Python format.
+
+        Parameters
+        ----------
+        info : mne.Info
+            MNE-Python Info object containing channel information.
+
+        Returns
+        -------
+        list of mne.EpochsArray
+            List of MNE-Python EpochsArray objects for each subject.
+        """
+        try:
+            from mne import create_info, EpochsArray
+        except ImportError:
+            raise ImportError(
+                "MNE-Python could not be imported. Use the following installation method "
+                "appropriate for your environment:\n\n"
+                f"    pip install mne\n"
+                f"    conda install -c conda-forge mne"
+            )
+        # Prepare info for epochs object in the end
+        info = create_info(
+            [f"CH{n:03}" for n in range(self.n_modes)],
+            ch_types=[ch_type] * self.n_modes,
+            sfreq=self.sfreq,
         )
-
-    return simulated_data
+        epochs_list = [EpochsArray(data, info, tmin=self.tmin) for data in self.data]
+        return epochs_list
