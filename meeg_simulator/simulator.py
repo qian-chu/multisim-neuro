@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from typing import Optional
 
 
@@ -230,14 +231,100 @@ class Simulator:
             )
             self.data.append(sub_data)
 
-    def export_to_mne(self, ch_type: str = "eeg") -> list:
+    def generate_events(
+        self,
+        X: np.ndarray = None,
+        cond_names: list = None,
+        mapping: dict = None,
+    ) -> tuple:
+        """
+        Generate MNE-compatible events and event_id dictionary from a design matrix.
+
+        Parameters
+        ----------
+        X : np.ndarray, shape (n_trials, n_conditions), optional
+            Design matrix to use. If None, defaults to self.X.
+        cond_names : list of str, optional
+            Names of the experimental conditions (columns of X).
+            If None, defaults to ["cond1", "cond2", ..., "condN"].
+        mapping : dict, optional
+            Dictionary specifying custom label mapping per condition.
+            Format: {condition_name: {original_value: label, ...}, ...}
+
+        Returns
+        -------
+        events : np.ndarray, shape (n_trials, 3)
+            Array of [onset_sample, 0, event_id] per trial.
+        event_id : dict
+            Dictionary mapping label string to event integer.
+        """
+        if X is None:
+            X = self.X
+
+        n_trials, n_conds = X.shape
+
+        # Set default condition names if not provided
+        if cond_names is None:
+            cond_names = [f"cond{i+1}" for i in range(n_conds)]
+
+        if len(cond_names) != n_conds:
+            raise ValueError(
+                f"Number of columns in X ({n_conds}) must match number of cond_names ({len(cond_names)})."
+            )
+
+        labels = []
+        for trial in X:
+            parts = []
+            for name, value in zip(cond_names, trial):
+                if mapping and name in mapping:
+                    label_value = mapping[name].get(value, str(value))
+                else:
+                    label_value = str(value)
+                parts.append(f"{name}_{label_value}")
+            labels.append("/".join(parts))
+
+        labels = np.array(labels)
+
+        # Unique combinations and event ID mapping
+        unique_labels = np.unique(labels)
+        event_id = {label: idx + 1 for idx, label in enumerate(unique_labels)}
+
+        # Event numbers for each trial
+        event_nums = np.array([event_id[label] for label in labels])
+
+        # Onset sample of each trial (first sample + number of sample in each trial + 1 for all trials but the first)
+        onsets = int(round(-self.tmin * self.sfreq)) + self.data[0].shape[2] * np.arange(n_trials) + (np.arange(n_trials) > 0).astype(int)
+
+
+        # Events array [onset, 0, event_id]
+        events = np.zeros((n_trials, 3), dtype=int)
+        events[:, 0] = onsets
+        events[:, 2] = event_nums
+
+        return events, event_id
+
+    def export_to_mne(
+            self, 
+            ch_type: str = "eeg", 
+            X: np.ndarray = None,
+            cond_names: list = None,
+            mapping: dict = None
+            ) -> list:
         """
         Export the simulated data to MNE-Python format.
 
         Parameters
         ----------
-        info : mne.Info
-            MNE-Python Info object containing channel information.
+        ch_type : str, optional
+            Type of the simulated channels
+        X : np.ndarray, shape (n_trials, n_conditions), optional
+            Design matrix to use. If None, defaults to self.X.
+        cond_names : list of str, optional
+            Names of the experimental conditions (columns of X).
+            If None, defaults to ["cond1", "cond2", ..., "condN"].
+        mapping : dict, optional
+            Dictionary specifying custom label mapping per condition.
+            Format: {condition_name: {original_value: label, ...}, ...}
 
         Returns
         -------
@@ -253,11 +340,14 @@ class Simulator:
                 f"    pip install mne\n"
                 f"    conda install -c conda-forge mne"
             )
+        # Create events:
+        events, event_id = self.generate_events(X, cond_names, mapping)
+        
         # Prepare info for epochs object in the end
         info = create_info(
             [f"CH{n:03}" for n in range(self.n_modes)],
             ch_types=[ch_type] * self.n_modes,
-            sfreq=self.sfreq,
+            sfreq=self.sfreq
         )
-        epochs_list = [EpochsArray(data, info, tmin=self.tmin) for data in self.data]
+        epochs_list = [EpochsArray(data, info, tmin=self.tmin, events=events, event_id=event_id) for data in self.data]
         return epochs_list
