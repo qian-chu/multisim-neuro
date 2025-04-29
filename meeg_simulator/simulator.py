@@ -351,3 +351,66 @@ class Simulator:
         )
         epochs_list = [EpochsArray(data, info, tmin=self.tmin, events=events, event_id=event_id) for data in self.data]
         return epochs_list
+    
+    def export_to_eeglab(
+        self, 
+        ch_type: str = "eeg", 
+        X: np.ndarray = None,
+        cond_names: list = None,
+        mapping: dict = None,
+        root: str = '.', 
+        fname_template: str = 'sub-{:02d}.set') -> None:
+        """
+        Export the simulated data to EEGLAB format (save to file).
+
+        Parameters
+        ----------
+        ch_type : str
+            Type of simulated channels, e.g., 'eeg' or 'meg'. Default is 'eeg'.
+        root : str
+            Directory where the files will be saved. Default is current directory '.'.
+        fname_template : str
+            Filename template for each subject, with a placeholder for the subject index.
+            Default is 'subject_{:02d}.set'.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        Requires 'mne' and 'eeglabio' packages.
+        Each subject's data will be saved as a separate EEGLAB file.
+        """
+
+        try:
+            from eeglabio.utils import export_mne_epochs
+        except ImportError:
+            raise ImportError(
+                "eeglabio could not be imported. Install it with:\n\n"
+                "    pip install eeglabio\n"
+                "    conda install -c conda-forge eeglabio"
+            )
+        
+        # Ensure fname_template has a placeholder
+        if '{' not in fname_template:
+            # No placeholder: append a subject number at the end
+            if fname_template.endswith('.set'):
+                fname_template = fname_template[:-4] + '_{:02d}.set'
+            else:
+                fname_template = fname_template + '_{:02d}.set'
+
+        if not os.path.exists(root):
+            os.makedirs(root)
+
+        # Convert to mne epochs:
+        epochs_list = self.export_to_mne(ch_type=ch_type, X=X, 
+                                            cond_names=cond_names, 
+                                            mapping=mapping)
+
+        for i, epo in enumerate(epochs_list):
+            filename = fname_template.format(i)
+            filepath = os.path.join(root, filename)
+            export_mne_epochs(epo, filepath)
+
+        return None
