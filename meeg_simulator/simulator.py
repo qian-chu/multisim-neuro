@@ -48,6 +48,9 @@ class Simulator:
         Type of simulated channels, e.g., `'eeg'` or `'meg'`. Default is `'eeg'`.
     kern : array, shape (n_samples, ), optional
         Temporal kernel. Should be 1 dimensional. If none, no temporal kernel is applied
+    intersub_noise_std : float, optional
+        Inter subject standard deviation in the effect amp. If not specified, assume no
+        inter subject variability
 
     Attributes
     ----------
@@ -101,7 +104,8 @@ class Simulator:
         effects: np.ndarray,
         effects_amp: Optional[np.ndarray] = None,
         spat_cov: Optional[np.ndarray] = None,
-        kern: Optional[np.ndarray] = None
+        kern: Optional[np.ndarray] = None,
+        intersub_noise_std: Optional[float] = 0,
     ):
         # ---------------------------------------------------------------------
         # 1. Check inputs & compute the number of samples
@@ -155,51 +159,52 @@ class Simulator:
         Xt = np.eye(n_samples)  # shape => [n_samples, n_samples]
 
         # ---------------------------------------------------------------------
-        # 3. Build a "time activation" matrix for each experimental condition
-        #    cv.shape => [n_samples, self.n_exp_conditions]
-        #    This marks time points in which each condition is active (1) or inactive (0)
-        # ---------------------------------------------------------------------
-        cv = np.zeros((n_samples, self.n_exp_conditions), dtype=float)
-
-        for idx, eff_cond in enumerate(effects):
-            # Identify which samples lie in the desired time window
-            start_t, end_t = t_win[idx]
-            # Mask for t in [start_t, end_t]
-            mask = (t >= start_t) & (t <= end_t)
-            cv[mask, eff_cond] = effects_amp[idx]
-    
-        # --------  OPTIONAL  temporal convolution  (causal only)  --------
-        if kern is not None:
-            for c in range(self.n_exp_conditions):
-                # causal (forward-only) convolution, keep length = n_samples
-                cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
-
-        # ---------------------------------------------------------------------
-        # 4. Construct the full design matrix with the Kronecker product
+        # 3. Construct the full design matrix with the Kronecker product
         #    shape => [n_epochs*n_samples, self.n_exp_conditions*n_samples]
         # ---------------------------------------------------------------------
         X_full = np.kron(X, Xt)
 
         # ---------------------------------------------------------------------
-        # 5. Intercept term across all trials and samples
+        # 4. Intercept term across all trials and samples
         #    shape => [n_epochs*n_samples, 1]
         # ---------------------------------------------------------------------
         X0 = np.ones((self.n_epochs * n_samples, 1), dtype=float)
 
         # ---------------------------------------------------------------------
-        # 6. Prepare outputs: loop over subjects and simulate data
+        # 5. Prepare outputs: loop over subjects and simulate data
         # ---------------------------------------------------------------------
         self.data = []
 
-        # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
-        # and multiply it by random effects. That ensures only certain (time, condition) combos
-        # end up non-zero.
-        cv_diagonal = np.diag(
-            cv.T.flatten()
-        )  # shape => [n_samples*self.n_exp_conditions, n_samples*self.n_exp_conditions]
-
         # Each subject gets unique random draws
         for _ in range(n_subjects):
+            # ---------------------------------------------------------------------
+            # 6. Build a "time activation" matrix for each experimental condition
+            #    cv.shape => [n_samples, self.n_exp_conditions]
+            #    This marks time points in which each condition is active (1) or inactive (0)
+            # ---------------------------------------------------------------------
+            cv = np.zeros((n_samples, self.n_exp_conditions), dtype=float)
+
+            for idx, eff_cond in enumerate(effects):
+                # Identify which samples lie in the desired time window
+                start_t, end_t = t_win[idx]
+                # Mask for t in [start_t, end_t]
+                mask = (t >= start_t) & (t <= end_t)
+                amp = np.random.normal(loc=effects_amp[idx], scale=intersub_noise_std)
+                cv[mask, eff_cond] = amp
+
+            # --------  OPTIONAL  temporal convolution  (causal only)  --------
+            if kern is not None:
+                for c in range(self.n_exp_conditions):
+                    # causal (forward-only) convolution, keep length = n_samples
+                    cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
+
+            # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
+            # and multiply it by random effects. That ensures only certain (time, condition) combos
+            # end up non-zero.
+            cv_diagonal = np.diag(
+                cv.T.flatten()
+            )  # shape => [n_samples*self.n_exp_conditions, n_samples*self.n_exp_conditions]
+
             # --------------------------------------------------
             # 7a. Build subject-specific effect weights
             #     shape => [n_samples*self.n_exp_conditions, n_modes]
