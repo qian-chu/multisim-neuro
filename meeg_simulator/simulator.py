@@ -46,6 +46,8 @@ class Simulator:
         matrix is used (i.e., no cross-channel correlations).
     ch_type : str, optional
         Type of simulated channels, e.g., `'eeg'` or `'meg'`. Default is `'eeg'`.
+    kern : array, shape (n_samples, ), optional
+        Temporal kernel. Should be 1 dimensional. If none, no temporal kernel is applied
 
     Attributes
     ----------
@@ -99,6 +101,7 @@ class Simulator:
         effects: np.ndarray,
         effects_amp: Optional[np.ndarray] = None,
         spat_cov: Optional[np.ndarray] = None,
+        kern: Optional[np.ndarray] = None
     ):
         # ---------------------------------------------------------------------
         # 1. Check inputs & compute the number of samples
@@ -117,6 +120,11 @@ class Simulator:
             )
         if effects_amp is None:
             effects_amp = [1 / 32] * len(effects)
+        if kern is not None:
+            if len(kern) == 0 or kern.ndim != 1:
+                raise ValueError("kern must be a 1-D numpy array.")
+            # Ensure float dtype for later maths
+            kern = kern.astype(float)
 
         self.X = X
         self.noise_std = noise_std
@@ -130,6 +138,7 @@ class Simulator:
         self.effects_amp = effects_amp
         self.spat_cov = spat_cov
         self.n_epochs, self.n_exp_conditions = X.shape
+        self.kern = kern
 
         # Make sure we get an integer sample count:
         n_samples = int(round((tmax - tmin) * sfreq)) - 1
@@ -158,6 +167,12 @@ class Simulator:
             # Mask for t in [start_t, end_t]
             mask = (t >= start_t) & (t <= end_t)
             cv[mask, eff_cond] = effects_amp[idx]
+    
+        # --------  OPTIONAL  temporal convolution  (causal only)  --------
+        if kern is not None:
+            for c in range(self.n_exp_conditions):
+                # causal (forward-only) convolution, keep length = n_samples
+                cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
 
         # ---------------------------------------------------------------------
         # 4. Construct the full design matrix with the Kronecker product
