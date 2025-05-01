@@ -40,7 +40,21 @@ class Simulator:
     effects_amp : array, shape (n_effects,) | None, optional
         Amplitudes of the effects. Effects are simulated by sampling beta parameters
         from a normal distribution across channels, with `effects_amp` defining
-        the variance of the distribution. Default is None (scales are uniform).
+        the variance of the distribution. Do not specify if you use effect size
+        and reciprocally. Default is None (use effect size instead).
+    effect_size : array, shape (n_effects,), optional
+        Standardized multivariate effect size (Mahalanobis distance) for each effect.
+        Internally converted to an amplitude `a` (which scales the spread of the betas) 
+        by solving:
+            d′ = a / σ · √(vᵀ Σ⁻¹ v)
+        for a, where
+        - σ = `noise_std`,
+        - Σ = `spat_cov` (sensor covariance),
+        - v = spatial pattern (unit vector across modes).
+        Thus the injected β-weights satisfy a Mahalanobis distance of d′
+        between condition centroids, yielding theoretical decoding
+        accuracy ≈ Φ(d′/2). Do not use if you specify effects_amp directly
+        Default is 0.5
     spat_cov : array, shape (n_modes, n_modes) | None, optional
         Spatial covariance matrix for the simulated data. If None, an identity
         matrix is used (i.e., no cross-channel correlations).
@@ -103,6 +117,7 @@ class Simulator:
         t_win: np.ndarray,
         effects: np.ndarray,
         effects_amp: Optional[np.ndarray] = None,
+        effect_size: Optional[np.ndarray] = None,
         spat_cov: Optional[np.ndarray] = None,
         kern: Optional[np.ndarray] = None,
         intersub_noise_std: Optional[float] = 0,
@@ -122,13 +137,34 @@ class Simulator:
                 f"spat_cov must be shape ({n_modes}, {n_modes}), "
                 f"but got {spat_cov.shape}."
             )
-        if effects_amp is None:
-            effects_amp = [1 / 32] * len(effects)
         if kern is not None:
             if len(kern) == 0 or kern.ndim != 1:
                 raise ValueError("kern must be a 1-D numpy array.")
             # Ensure float dtype for later maths
             kern = kern.astype(float)
+
+        # ------------------------------------------------------------------
+        #  Resolve effect amplitudes (channel-norm–corrected)
+        # ------------------------------------------------------------------
+        if effects_amp is not None and effect_size is not None:
+            raise ValueError("Pass either 'effects_amp' or 'effect_size', not both.")
+
+        if effects_amp is not None:
+            effects_amp = np.asarray(effects_amp, float) / np.sqrt(n_modes)
+
+        elif effect_size is not None:
+            effect_size = np.asarray(effect_size, float)
+            if effect_size.shape != (len(effects),):
+                raise ValueError("'effect_size' must match len(effects).")
+            # Normalize effect size by the spatial covariance matrix:
+            inv_cov = np.linalg.pinv(spat_cov)               # pseudoinverse
+            denom = np.sqrt(np.trace(inv_cov))               # = √n_modes  if Σ = I
+            effects_amp = effect_size * noise_std / denom # guarantees d′ = effect_size
+
+        else:  # default: effect size of 0.5 (mahlanobis distance)
+            inv_cov = np.linalg.pinv(spat_cov)      # safe inverse
+            denom   = np.sqrt(np.trace(inv_cov))    # = √n_modes if Σ = I
+            effects_amp = np.full(len(effects), 0.5) * noise_std / denom # guarantees d′ = effect_size
 
         self.X = X
         self.noise_std = noise_std
