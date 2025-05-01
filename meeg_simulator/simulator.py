@@ -46,17 +46,17 @@ class Simulator:
         Standardized multivariate effect size (Mahalanobis distance) for each effect.
         Internally converted to an amplitude `a` (which scales the spread of the betas) 
         by solving:
-            d′ = a / σ · √(vᵀ Σ⁻¹ v)
+            d' = a / σ · √(vᵀ Σ⁻¹ v)
         for a, where
         - σ = `noise_std`,
-        - Σ = `spat_cov` (sensor covariance),
+        - Σ = `ch_cov` (sensor covariance),
         - v = spatial pattern (unit vector across modes).
-        Thus the injected β-weights satisfy a Mahalanobis distance of d′
+        Thus the injected β-weights satisfy a Mahalanobis distance of d'
         between condition centroids, yielding theoretical decoding
-        accuracy ≈ Φ(d′/2). Do not use if you specify effects_amp directly
+        accuracy ≈ Φ(d'/2). Do not use if you specify effects_amp directly
         Default is 0.5
-    spat_cov : array, shape (n_channels, n_channels) | None, optional
-        Spatial covariance matrix for the simulated data. If None, an identity
+    ch_cov : array, shape (n_channels, n_channels) | None, optional
+        Channel data covariance matrix for the simulated data. If None, an identity
         matrix is used (i.e., no cross-channel correlations).
     ch_type : str, optional
         Type of simulated channels, e.g., `'eeg'` or `'meg'`. Default is `'eeg'`.
@@ -118,7 +118,7 @@ class Simulator:
         effects: np.ndarray,
         effects_amp: Optional[np.ndarray] = None,
         effect_size: Optional[np.ndarray] = None,
-        spat_cov: Optional[np.ndarray] = None,
+        ch_cov: Optional[np.ndarray] = None,
         kern: Optional[np.ndarray] = None,
         intersub_noise_std: Optional[float] = 0,
     ):
@@ -130,12 +130,12 @@ class Simulator:
                 "The dimension of 'effects' and 't_win' do not match! "
                 "There should be exactly one time window for each effect."
             )
-        if spat_cov is None:
-            spat_cov = np.eye(n_channels)  # Identity covariance matrix
-        elif spat_cov.shape != (n_channels, n_channels):
+        if ch_cov is None:
+            ch_cov = np.eye(n_channels)  # Identity covariance matrix
+        elif ch_cov.shape != (n_channels, n_channels):
             raise ValueError(
-                f"spat_cov must be shape ({n_channels}, {n_channels}), "
-                f"but got {spat_cov.shape}."
+                f"ch_cov must be shape ({n_channels}, {n_channels}), "
+                f"but got {ch_cov.shape}."
             )
         if kern is not None:
             if len(kern) == 0 or kern.ndim != 1:
@@ -159,12 +159,12 @@ class Simulator:
             if effect_size.shape != (len(effects),):
                 raise ValueError("'effect_size' must match len(effects).")
             # Normalize effect size by the spatial covariance matrix:
-            inv_cov = np.linalg.pinv(spat_cov)               # pseudoinverse
+            inv_cov = np.linalg.pinv(ch_cov)               # pseudoinverse
             denom = np.sqrt(np.trace(inv_cov))               # = √n_channels  if Σ = I
             effects_amp = effect_size * noise_std / denom # guarantees d′ = effect_size
 
         else:  # default: effect size of 0.5 (mahlanobis distance)
-            inv_cov = np.linalg.pinv(spat_cov)      # safe inverse
+            inv_cov = np.linalg.pinv(ch_cov)      # safe inverse
             denom   = np.sqrt(np.trace(inv_cov))    # = √n_channels if Σ = I
             effects_amp = np.full(len(effects), 0.5) * noise_std / denom # guarantees d′ = effect_size
 
@@ -178,7 +178,7 @@ class Simulator:
         self.t_win = t_win
         self.effects = effects
         self.effects_amp = effects_amp
-        self.spat_cov = spat_cov
+        self.ch_cov = ch_cov
         self.n_epochs, self.n_exp_conditions = X.shape
         self.kern = kern
 
@@ -257,7 +257,7 @@ class Simulator:
             B = (
                 cv_diagonal
                 @ np.random.randn(n_samples * self.n_exp_conditions, n_channels)
-                @ spat_cov
+                @ ch_cov
             )  # shape => [n_samples*self.n_exp_conditions, n_channels]
 
             # --------------------------------------------------
@@ -279,7 +279,7 @@ class Simulator:
             # --------------------------------------------------
             noise = np.random.randn(self.n_epochs * n_samples, n_channels)
             # Apply spatial covariance
-            noise = noise @ spat_cov
+            noise = noise @ ch_cov
             noise *= noise_std
 
             sub_data += noise
@@ -416,8 +416,7 @@ class Simulator:
         return epochs_list
     
     def export_to_eeglab(
-        self, 
-        ch_type: str = "eeg", 
+        self,
         X: np.ndarray = None,
         cond_names: list = None,
         mapping: dict = None,
