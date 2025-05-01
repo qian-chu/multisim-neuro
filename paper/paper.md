@@ -1,22 +1,32 @@
 # SimMEG: A Python Toolbox for Simulating MEG/EEG Datasets with Known “Ground Truth” Effects
 
-# Summary
-In magnetoencephalography (MEG) and electroencephalography (EEG) research, it is often challenging to verify whether the analysis pipelines used to detect neural effects are both sensitive (i.e., detecting real effects) and specific (i.e., avoiding false alarms). Typically, real experimental datasets do not include known ground-truth patterns. This makes it difficult to validate new methods or confirm that existing pipelines are reliably capturing genuine neural signals. SimMEG addresses this gap by allowing researchers to generate realistic MEG/EEG data, complete with user-specified and time-locked experimental effects of known magnitude. The simulated datasets can then be analyzed with any chosen pipeline (e.g., classification, univariate sensor-level analysis, source localization), providing a ground-truth benchmark for sensitivity and specificity.
-This toolbox is designed to flexibly mimic user-specified designs and to inject multivariate effects in chosen time windows, reflecting hypothesized differences between experimental conditions. By doing so, it aids in:
-- Confirming whether a pipeline can detect signals of a given effect size.
-- Demonstrating to reviewers and collaborators that analyses are robust, reproducible, and well-calibrated.
-- Teaching and training newcomers to MEG/EEG analysis in a controlled environment.
+**Alex Lepauvre**<sup>1,2</sup>, **Qian Chu**<sup>1,3,4,5</sup>, **Lucia Melloni**<sup>1,6,7</sup>, **Peter Zeidman**<sup>8</sup>
 
-In the following sections, we outline the general rationale for the toolbox (Introduction), detail how our simulation function generates data (Methods), provide a simple demonstration (Results), and discuss potential applications and future developments (Discussion).
+<sup>1</sup>Neural Circuits, Consciousness and Cognition Research Group, Max Planck Institute for Empirical Aesthetics, Frankfurt am Main, 60322, Germany  
+<sup>2</sup>Donders Institute for Brain, Cognition and Behaviour, Radboud University Nijmegen, Nijmegen, 6500 HB, The Netherlands  
+<sup>3</sup>Max Planck – University of Toronto Centre for Neural Science and Technology  
+<sup>4</sup>Krembil Brain Institute & KITE Research Institute & CRANIA, University Health Network  
+<sup>5</sup>University of Toronto  
+<sup>6</sup>Department of Neurology, New York University Grossman School of Medicine, New York, NY, USA  
+<sup>7</sup>Predictive Brain Department, Research Center One Health Ruhr, University Alliance Ruhr, Faculty of Psychology, Ruhr University Bochum, Bochum, Germany  
+<sup>8</sup>Functional Imaging Laboratory, Department of Imaging Neuroscience, UCL Queen Square Institute of Neurology, 12 Queen Square, London WC1N 3AR, UK  
+
+# Summary
+In MEG/EEG research, validating analysis pipelines is hampered by the lack of ground-truth neural signals in real data. SimMEG fills this gap by generating realistic, time-locked multivariate effects of known magnitude that you can inject into simulated sensor data. You can then run any pipeline—e.g. decoding, sensor-level statistics, or source estimation—against these datasets to benchmark sensitivity and specificity. 
+
+Key benefits include:
+
+- Testing whether your pipeline reliably detects effects of a chosen size.  
+- Providing demonstrable, reproducible benchmarks for reviewers or collaborators.  
+- Offering a controlled teaching environment for newcomers.  
+
+Below, we describe the rationale (Statement of needs), and the data-generation method (Methods), a hands-on example (Results), and potential extensions (Discussion).  
 
 # Statement of needs
-MEG and EEG are popular techniques for studying brain dynamics at the millisecond timescale. The analysis of these data, however, can be complex due to high dimensionality, low signal-to-noise ratios, and subject-to-subject variability. Researchers routinely develop pipelines that involve preprocessing (artifact removal, filtering), sensor- or source-level analyses (e.g., multivariate decoding, univariate tests), and statistics (e.g., cluster-based permutation tests).
-One major limitation in evaluating such pipelines is that real datasets rarely provide absolute certainty about the presence, timing, or amplitude of neural effects. Often, “chance-level” or baseline-corrected activity is used as a reference, but the ground truth remains unknown. SimMEG directly addresses this limitation:
-1.	Design-driven simulation: Users specify an experimental design matrix, including factors (e.g., face vs. object stimuli; attended vs. unattended conditions).
-2.	Time-locked pattern injection: The toolbox injects effects in specified time windows so that the timing and amplitude of each effect are known.
-3.	Multi-subject support: Multiple participants can be simulated for group-level analyses.
-4.	Spatial covariance: Researchers can incorporate realistic sensor covariance or keep it identity for simplicity.
-By running a chosen analysis pipeline on these artificial datasets, researchers can easily verify whether and where the pipeline correctly detects the known effects, thereby obtaining a direct estimate of sensitivity and specificity.
+
+MEG and EEG analysis pipelines—spanning from preprocessing and artifact rejection to sensor- or source-level statistics and multivariate decoding—struggle with three fundamental issues: the very high dimensionality of the data, low signal-to-noise ratios (SNR), and the fact that in real recordings we never know the “ground truth” about when or where genuine neural effects occur.  As a result, it is difficult to quantify how sensitive a given pipeline really is, or how often it produces false positives.
+
+SimMEG addresses this gap by enabling simulation of multivariate data with full control over the simulated effects. Users can define any experimental design matrix (conditions and contrasts), the parameters of the data set (number of trials, channels, participants and spatial covariance of the sensors), specify exactly when and how large each effect should be, to simulate entire subject cohorts.  Users can then run your custom analysis pipeline on these synthetic datasets and directly measure its ability to detect the planted effects—and its proclivity for false alarms—under realistic noise and covariance conditions. Importantly, this toolbox can be used to determine the ideal number of trials per subject and the number of subjects, given the parameters of their recording system and the predetermined size of the effect under investigation.
 
 # Method
 
