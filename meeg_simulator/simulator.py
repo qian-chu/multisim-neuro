@@ -221,14 +221,15 @@ class Simulator:
             #    This marks time points in which each condition is active (1) or inactive (0)
             # ---------------------------------------------------------------------
             cv = np.zeros((n_samples, self.n_exp_conditions), dtype=float)
-
+            # Preallocate for storing subject specific amplitudes:
+            subject_effect_amp = np.zeros(effects_amp.shape)
             for idx, eff_cond in enumerate(effects):
                 # Identify which samples lie in the desired time window
                 start_t, end_t = t_win[idx]
                 # Mask for t in [start_t, end_t]
                 mask = (t >= start_t) & (t <= end_t)
-                amp = np.random.normal(loc=effects_amp[idx], scale=intersub_noise_std)
-                cv[mask, eff_cond] = amp
+                subject_effect_amp[idx] = np.random.normal(loc=effects_amp[idx], scale=intersub_noise_std)
+                cv[mask, eff_cond] = subject_effect_amp[idx]
 
             # --------  OPTIONAL  temporal convolution  (causal only)  --------
             if kern is not None:
@@ -236,10 +237,10 @@ class Simulator:
                     # causal (forward-only) convolution, keep length = n_samples
                     cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
                     # Ensure that the max value after convolution matches the effect_amp specified
-                    peak = cv[:,c].max()
+                    peak = np.max(np.abs(cv[:, c]))
                     if peak <= 0:
                         raise RuntimeError("Convolution dropped all signal!")
-                    cv[:,c] *= (effects_amp[idx] / peak)
+                    cv[:,c] *= (subject_effect_amp[idx] / peak)
 
             # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
             # and multiply it by random effects. That ensures only certain (time, condition) combos
