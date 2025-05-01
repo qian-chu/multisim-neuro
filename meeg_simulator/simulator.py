@@ -445,9 +445,8 @@ class Simulator:
         Requires 'mne' and 'eeglabio' packages.
         Each subject's data will be saved as a separate EEGLAB file.
         """
-
         try:
-            from eeglabio.utils import export_mne_epochs
+            from eeglabio.epochs import export_set
         except ImportError:
             raise ImportError(
                 "eeglabio could not be imported. Install it with:\n\n"
@@ -466,14 +465,16 @@ class Simulator:
         if not os.path.exists(root):
             os.makedirs(root)
 
-        # Convert to mne epochs:
-        epochs_list = self.export_to_mne(ch_type=ch_type, X=X, 
-                                            cond_names=cond_names, 
-                                            mapping=mapping)
+        # Create events:
+        events, event_id = self.generate_events(X, cond_names, mapping)
 
-        for i, epo in enumerate(epochs_list):
+        for i, epo in enumerate(self.data):
             filename = fname_template.format(i)
             filepath = os.path.join(root, filename)
-            export_mne_epochs(epo, filepath)
+            export_set(filepath, epo, self.sfreq, events, 
+                       self.tmin, self.tmax, 
+                       [f"CH{n:03}" for n in range(self.n_channels)],
+                       event_id=event_id, ch_locs=None, annotations=None, 
+                       ref_channels='common', precision='single')
 
         return None
