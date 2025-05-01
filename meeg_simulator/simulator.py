@@ -22,7 +22,7 @@ class Simulator:
         Between-trial design matrix specifying experimental manipulations.
     noise_std : float
         Standard deviation of additive Gaussian noise (applied before spatial covariance).
-    n_modes : int
+    n_channels : int
         Number of spatial modes (e.g., sensors or components) in the simulated data.
     n_subjects : int
         Number of subjects to simulate.
@@ -55,7 +55,7 @@ class Simulator:
         between condition centroids, yielding theoretical decoding
         accuracy ≈ Φ(d′/2). Do not use if you specify effects_amp directly
         Default is 0.5
-    spat_cov : array, shape (n_modes, n_modes) | None, optional
+    spat_cov : array, shape (n_channels, n_channels) | None, optional
         Spatial covariance matrix for the simulated data. If None, an identity
         matrix is used (i.e., no cross-channel correlations).
     ch_type : str, optional
@@ -68,7 +68,7 @@ class Simulator:
 
     Attributes
     ----------
-    data: list of np.ndarray of shape (n_epochs, n_modes, n_samples)
+    data: list of np.ndarray of shape (n_epochs, n_channels, n_samples)
         Simulated data for each subject.
 
     Raises
@@ -99,7 +99,7 @@ class Simulator:
     >>> X = np.random.randn(100, 2)  # 100 trials, 2 experimental conditions
     >>> t_win = np.array([[0.2, 0.5]])  # Effect between 200-500 ms
     >>> effects = np.array([1])  # Effect corresponds to second column of X
-    >>> epochs_list = simulate_data(X, noise_std=0.1, n_modes=64, n_subjects=20,
+    >>> epochs_list = simulate_data(X, noise_std=0.1, n_channels=64, n_subjects=20,
     ...                             tmin=-0.2, tmax=0.8, sfreq=250,
     ...                             t_win=t_win, effects=effects)
     >>> print(len(epochs_list))  # Should return 20 subjects
@@ -109,7 +109,7 @@ class Simulator:
         self,
         X: np.ndarray,
         noise_std: float,
-        n_modes: int,
+        n_channels: int,
         n_subjects: int,
         tmin: float,
         tmax: float,
@@ -131,10 +131,10 @@ class Simulator:
                 "There should be exactly one time window for each effect."
             )
         if spat_cov is None:
-            spat_cov = np.eye(n_modes)  # Identity covariance matrix
-        elif spat_cov.shape != (n_modes, n_modes):
+            spat_cov = np.eye(n_channels)  # Identity covariance matrix
+        elif spat_cov.shape != (n_channels, n_channels):
             raise ValueError(
-                f"spat_cov must be shape ({n_modes}, {n_modes}), "
+                f"spat_cov must be shape ({n_channels}, {n_channels}), "
                 f"but got {spat_cov.shape}."
             )
         if kern is not None:
@@ -152,7 +152,7 @@ class Simulator:
             raise ValueError("Pass either 'effects_amp' or 'effect_size', not both.")
 
         if effects_amp is not None:
-            effects_amp = np.asarray(effects_amp, float) / np.sqrt(n_modes)
+            effects_amp = np.asarray(effects_amp, float) / np.sqrt(n_channels)
 
         elif effect_size is not None:
             effect_size = np.asarray(effect_size, float)
@@ -160,17 +160,17 @@ class Simulator:
                 raise ValueError("'effect_size' must match len(effects).")
             # Normalize effect size by the spatial covariance matrix:
             inv_cov = np.linalg.pinv(spat_cov)               # pseudoinverse
-            denom = np.sqrt(np.trace(inv_cov))               # = √n_modes  if Σ = I
+            denom = np.sqrt(np.trace(inv_cov))               # = √n_channels  if Σ = I
             effects_amp = effect_size * noise_std / denom # guarantees d′ = effect_size
 
         else:  # default: effect size of 0.5 (mahlanobis distance)
             inv_cov = np.linalg.pinv(spat_cov)      # safe inverse
-            denom   = np.sqrt(np.trace(inv_cov))    # = √n_modes if Σ = I
+            denom   = np.sqrt(np.trace(inv_cov))    # = √n_channels if Σ = I
             effects_amp = np.full(len(effects), 0.5) * noise_std / denom # guarantees d′ = effect_size
 
         self.X = X
         self.noise_std = noise_std
-        self.n_modes = n_modes
+        self.n_channels = n_channels
         self.n_subjects = n_subjects
         self.tmin = tmin
         self.tmax = tmax
@@ -250,34 +250,34 @@ class Simulator:
 
             # --------------------------------------------------
             # 7a. Build subject-specific effect weights
-            #     shape => [n_samples*self.n_exp_conditions, n_modes]
+            #     shape => [n_samples*self.n_exp_conditions, n_channels]
             # --------------------------------------------------
             # Generate beta parameters randomy sampled from a standard normal distribution,
             # but using CV to set the effects to their desired effect sizes. Adding spatial covariance across effects
             B = (
                 cv_diagonal
-                @ np.random.randn(n_samples * self.n_exp_conditions, n_modes)
+                @ np.random.randn(n_samples * self.n_exp_conditions, n_channels)
                 @ spat_cov
-            )  # shape => [n_samples*self.n_exp_conditions, n_modes]
+            )  # shape => [n_samples*self.n_exp_conditions, n_channels]
 
             # --------------------------------------------------
             # 7b. Combine with the full design
-            #     shape => [n_epochs*n_samples, n_modes]
+            #     shape => [n_epochs*n_samples, n_channels]
             # --------------------------------------------------
             sub_data = X_full @ B
 
             # --------------------------------------------------
             # 7c. Add intercept
-            #     shape => [n_epochs*n_samples, n_modes]
+            #     shape => [n_epochs*n_samples, n_channels]
             # --------------------------------------------------
-            B0 = np.random.randn(1, n_modes) / 16.0
+            B0 = np.random.randn(1, n_channels) / 16.0
             intercept = X0 @ B0
             sub_data += intercept
 
             # --------------------------------------------------
             # 7d. Add noise (spatially correlated)
             # --------------------------------------------------
-            noise = np.random.randn(self.n_epochs * n_samples, n_modes)
+            noise = np.random.randn(self.n_epochs * n_samples, n_channels)
             # Apply spatial covariance
             noise = noise @ spat_cov
             noise *= noise_std
@@ -290,7 +290,7 @@ class Simulator:
             # Reshape the data:
             # Reshape to [N, T, C] (trials x time x channels)
             sub_data = np.transpose(
-                sub_data.reshape([self.n_epochs, len(t), n_modes]), [0, 2, 1]
+                sub_data.reshape([self.n_epochs, len(t), n_channels]), [0, 2, 1]
             )
             self.data.append(sub_data)
 
@@ -408,8 +408,8 @@ class Simulator:
         
         # Prepare info for epochs object in the end
         info = create_info(
-            [f"CH{n:03}" for n in range(self.n_modes)],
-            ch_types=[ch_type] * self.n_modes,
+            [f"CH{n:03}" for n in range(self.n_channels)],
+            ch_types=[ch_type] * self.n_channels,
             sfreq=self.sfreq
         )
         epochs_list = [EpochsArray(data, info, tmin=self.tmin, events=events, event_id=event_id) for data in self.data]
