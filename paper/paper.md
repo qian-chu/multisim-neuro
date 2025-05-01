@@ -20,25 +20,89 @@ By running a chosen analysis pipeline on these artificial datasets, researchers 
 
 # Method
 
-SimMEG generates synthetic epoched MEG/EEG data according to a user-specified design matrix and effect windows. We briefly describe the mathematical model and outline each step of the procedure.
-1.	Design Matrix
-Let $X\mathbf{X}$ be a design matrix of size $[N_{\text{trials}}, N_{\text{cond}}]$, indicating how each trial corresponds to one or more experimental factors (e.g., Category, Attention). Each column in $X\mathbf{X}X$ encodes a condition contrast (e.g., +1+1+1 for faces, −1-1−1 for objects).
-2.	Time Grid and Activation Windows
-We simulate each epoch from $t_{\min}$ to $t_{\max}$, sampled at frequency $f_s$. If $T$ is the total number of time points in each epoch, we construct an identity matrix $\mathbf{X}_t \in \mathbb{R}^{T \times T}$ so that each time point can be considered separately in the design. Next, we specify effect windows for each condition, e.g., faces vs. objects is active from 100 ms to 200 ms. A binary activation vector $\mathbf{cv}$ indicates which time samples are “activated” for each condition.
-3.	Kronecker Product for $Trial \times Time$
-We define the full “trial-by-time” design matrix $\mathbf{X}_{\text{full}}$ via the Kronecker product:
-$\mathbf{X}_{\text{full}} = \mathbf{X} \otimes \mathbf{X}_t$,
-ensuring that each column in $\mathbf{X}_{\text{full}}$ corresponds to a unique combination of (condition, time).
-4.	Generating the Ground Truth Effects
-We assume each condition contrast has a latent multivariate pattern $\boldsymbol{\beta}$. We can sample $\boldsymbol{\beta}$ from a multivariate normal distribution, incorporating a user-specified spatial covariance $\mathbf{\Sigma} \in \mathbb{R}^{C \times C}$ for the $C$ channels (or sensor “modes”). The resulting parameter matrix $\mathbf{B}$ has shape $[T \times N_{\text{cond}},\, C]$. Crucially, we only activate the relevant columns (time windows) for each condition by diagonalizing the time-activation mask $\mathbf{cv}$.
-5.	Adding an Intercept and Noise
-We introduce an intercept term $\mathbf{B}_0$ (sampled from a normal distribution) and add random Gaussian noise $\varepsilon$ with standard deviation $\sigma$. The noise can also be correlated across channels:
-$\boldsymbol{\varepsilon} \sim \mathcal{N}\left(\mathbf{0},\, \sigma^2 \mathbf{\Sigma}\right)$.
-The final simulated data $\mathbf{Y}$ in vectorized form is:
-$\mathbf{Y}_{\text{vec}} = \mathbf{X}_{\text{full}} \mathbf{B} \;+\; \mathbf{X}_0 \mathbf{B}_0 \;+\; \boldsymbol{\varepsilon}$.
-Here, $\mathbf{X}_0$ can be an all-ones column (intercept). We then reshape $\mathbf{Y}$ back to the shape $[\;N_{\text{trials}},\, T,\, C\;]$.
-6.	Epochs Construction
-The final data is placed into MNE-Python EpochsArray objects (one per simulated subject), making it seamlessly compatible with typical pipelines for preprocessing, decoding, or sensor-level analysis.
+## Generative model
+
+For each subject $s$, we simulate epoched data $\mathbf{Y}_s \in \mathbb{R}^{N_{\text{samples}} \times n_{\text{feat}}}$ according to the general linear model:
+
+$$
+\mathbf{Y}_s = \mathbf{X} \mathbf{B}_s + \mathbf{1} \bm{\beta}_{0,s}^\top + \bm{\varepsilon}_s,
+$$
+
+where: 
+
+- $\mathbf{X}$ is the full design matrix with $n_{samples} * n_{trials}$ rows and $n_{samples} * n_{conditions}$ columns
+- $\mathbf{B}$ is a matrix with $n_{samples} * n_{conditions}$ rows and $n_{features}$ columns 
+- $N_{\text{samples}} = n_{\text{epochs}} \times n_t$ is the total number of time samples across all trials, and $\mathbf{1} \bm{\beta}_{0,s}^\top$ is a subject-specific intercept term. The matrix $\mathbf{X}$ is the **full design matrix**, with one regressor for each combination of experimental condition and time point.
+
+The noise term is drawn from a multivariate normal distribution:
+
+$
+\bm{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma}),
+$
+
+where $\sigma = \texttt{noise\_std}$ and $\mathbf{\Sigma} = \texttt{spat\_cov}$ denotes the spatial covariance of the sensors (default: identity).
+
+## Constructing the regression coefficients
+
+Each experimental effect is defined by:
+
+- an experimental condition (column index $c$),
+- a temporal window $[t_{\text{on}}, t_{\text{off}}]$,
+- and a desired multivariate effect size $d$ (interpreted as a Cohen-style $d'$).
+
+We first create a rectangular temporal mask:
+
+$$
+m_t = \begin{cases}
+1 & \text{if } t_{\text{on}} \leq t \leq t_{\text{off}}, \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+If a causal kernel $h$ is provided, the temporal profile is convolved and rescaled to unit energy:
+
+$$
+\widetilde{\mathbf{m}} = \frac{\mathbf{m} * h}{\lVert \mathbf{m} * h \rVert_2}
+$$
+
+A uniform spatial pattern is used: $\mathbf{v} = \mathbf{1} \in \mathbb{R}^{n_{\text{feat}}}$. Its length under the inverse spatial covariance is:
+
+$$
+L = \sqrt{\mathbf{v}^\top \mathbf{\Sigma}^{-1} \mathbf{v}} = \sqrt{\operatorname{tr}(\mathbf{\Sigma}^{-1})}
+$$
+
+We then scale the amplitude for subject $s$ as:
+
+$$
+a_s = \mathcal{N}(d \cdot \sigma / L,\; \texttt{intersub\_noise\_std}^2)
+$$
+
+Finally, the corresponding rows in the coefficient matrix $\mathbf{B}_s$ are populated as:
+
+$$
+\beta_{c,t:s} = a_s \cdot \widetilde{m}_t \cdot \mathbf{v}^\top
+$$
+
+All other entries of $\mathbf{B}_s$ remain zero.
+
+---
+
+## From effect size to decoding accuracy
+
+Because $\lVert \widetilde{\mathbf{m}} \rVert_2 = 1$, the effective Mahalanobis distance between classes at each time point is:
+
+$$
+d'_t = \frac{a_s}{\sigma} \cdot L = d
+$$
+
+This guarantees that the discriminability between class centroids at each time point matches the desired $d'$. Under standard assumptions of equal-covariance Gaussian classes, the theoretical decoding accuracy is:
+
+$$
+P_{\text{correct}} = \Phi\left(\frac{d}{2}\right)
+$$
+
+Thus, users can simulate data with known decoding difficulty:  
+e.g. $d = 0.2, 0.5, 1.0$ yields ~60%, 69%, and 84% expected accuracy respectively, independent of the number or covariance of features.
 
 # Code Quality and Documentation
 SimMEG is hosted on GitHub. Examples and API documentation are available on the platform XXX. We provide installation guides, algorithm introductions, and examples of using the package with Jupyter Notebook [REF]. The package is available on Linux, macOS and Windows for Python >=3.12
