@@ -142,6 +142,8 @@ class Simulator:
                 raise ValueError("kern must be a 1-D numpy array.")
             # Ensure float dtype for later maths
             kern = kern.astype(float)
+            # Normalize the kernel (so that it sums up to 1):
+            kern = kern / kern.sum()
 
         # ------------------------------------------------------------------
         #  Resolve effect amplitudes (channel-norm–corrected)
@@ -233,6 +235,11 @@ class Simulator:
                 for c in range(self.n_exp_conditions):
                     # causal (forward-only) convolution, keep length = n_samples
                     cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
+                    # Ensure that the max value after convolution matches the effect_amp specified
+                    peak = cv[:,c].max()
+                    if peak <= 0:
+                        raise RuntimeError("Convolution dropped all signal!")
+                    cv[:,c] *= (effects_amp[idx] / peak)
 
             # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
             # and multiply it by random effects. That ensures only certain (time, condition) combos
