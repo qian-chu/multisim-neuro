@@ -72,19 +72,19 @@ SimMEG addresses this gap by enabling simulation of multivariate data with full 
 For each subject $s$, we simulate epoched data $\mathbf{Y}_s \in \mathbb{R}^{N_{\text{samples}} \times n_{\text{feat}}}$ according to the general linear model:
 
 $$
-\mathbf{Y}_s = \mathbf{X} \mathbf{B}_s + \mathbf{1} \bm{\beta}_{0,s}^\top + \bm{\varepsilon}_s,
+\mathbf{Y}_s = \mathbf{X} \mathbf{B}_s + \mathbf{1} \boldsymbol{\beta}_{0,s}^\top + \boldsymbol{\varepsilon}_s,
 $$
 
 where: 
 
 - $\mathbf{X}$ is the full design matrix with $n_{samples} * n_{trials}$ rows and $n_{samples} * n_{conditions}$ columns
 - $\mathbf{B}$ is a matrix with $n_{samples} * n_{conditions}$ rows and $n_{features}$ columns 
-- $N_{\text{samples}} = n_{\text{epochs}} \times n_t$ is the total number of time samples across all trials, and $\mathbf{1} \bm{\beta}_{0,s}^\top$ is a subject-specific intercept term. The matrix $\mathbf{X}$ is the **full design matrix**, with one regressor for each combination of experimental condition and time point.
+- $N_{\text{samples}} = n_{\text{epochs}} \times n_t$ is the total number of time samples across all trials, and $\mathbf{1} \boldsymbol{\beta}_{0,s}^\top$ is a subject-specific intercept term. The matrix $\mathbf{X}$ is the **full design matrix**, with one regressor for each combination of experimental condition and time point.
 
 The noise term is drawn from a multivariate normal distribution:
 
 $
-\bm{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma}),
+\boldsymbol{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma}),
 $
 
 where $\sigma = \texttt{noise\_std}$ and $\mathbf{\Sigma} = \texttt{spat\_cov}$ denotes the spatial covariance of the sensors (default: identity).
