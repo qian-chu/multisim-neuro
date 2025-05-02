@@ -8,62 +8,63 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0           # fetch full history so rebases can succeed
+          persist-credentials: true # allow git push with the checkout token
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12'
 
-    - name: Install Pandoc
-      run: |
-        sudo apt-get install pandoc
+      - name: Install Pandoc
+        run: sudo apt-get install pandoc
 
-    - name: Install Sphinx & Dependencies
-      run: |
-        pip install sphinx sphinx-rtd-theme nbsphinx pydata_sphinx_theme numpydoc # Explicitly install Sphinx
-        pip install .[full]
+      - name: Install Sphinx & Dependencies
+        run: |
+          pip install sphinx sphinx-rtd-theme nbsphinx pydata_sphinx_theme numpydoc
+          pip install .[full]
 
-    - name: Install Ruff
-      run: pip install ruff  # Ensures ruff is available
-    
-    - name: Format Code
-      env:
-        PYTHONPATH: ${{ github.workspace }}  # Add your module's path to PYTHONPATH
-      run: ruff format
-    
-    - name: Commit changes if any
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git commit -m "Format code with ruff" || echo "No changes to commit"
-        git push
+      - name: Install Ruff
+        run: pip install ruff
 
-    - name: Build Documentation
-      env:
-        PYTHONPATH: ${{ github.workspace }}  # Add your module's path to PYTHONPATH
-      run: |
-        cd docs
-        make html
+      - name: Format Code
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: ruff format
 
-    - name: Create .nojekyll file
-      run: |
-        touch docs/build/html/.nojekyll  # Create the .nojekyll file in the html directory
+      - name: Commit changes if any
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git pull --rebase origin main
+          git add .
+          git commit -m "Format code with ruff" || echo "No changes to commit"
+          git push
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: html-docs
-        path: docs/build/html
+      - name: Build Documentation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          cd docs
+          make html
 
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/build/html
-    
-    - name: Remove build folder
-      run: |
-        rm -rf docs/build/*
+      - name: Create .nojekyll file
+        run: touch docs/build/html/.nojekyll
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-docs
+          path: docs/build/html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
+
+      - name: Remove build folder
+        run: rm -rf docs/build/*
