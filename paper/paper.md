@@ -5,8 +5,8 @@
 <sup>1</sup>Neural Circuits, Consciousness and Cognition Research Group, Max Planck Institute for Empirical Aesthetics, Frankfurt am Main, 60322, Germany  
 <sup>2</sup>Donders Institute for Brain, Cognition and Behaviour, Radboud University Nijmegen, Nijmegen, 6500 HB, The Netherlands  
 <sup>3</sup>Max Planck – University of Toronto Centre for Neural Science and Technology  
-<sup>4</sup>Krembil Brain Institute & KITE Research Institute & CRANIA, University Health Network  
-<sup>5</sup>University of Toronto  
+<sup>4</sup>Krembil Brain Institute, Toronto Western Hospital, University Health Network, Toronto, ON, Canada  
+<sup>5</sup>Institute of Biomedical Engineering, University of Toronto, Toronto, ON, Canada  
 <sup>6</sup>Department of Neurology, New York University Grossman School of Medicine, New York, NY, USA  
 <sup>7</sup>Predictive Brain Department, Research Center One Health Ruhr, University Alliance Ruhr, Faculty of Psychology, Ruhr University Bochum, Bochum, Germany  
 <sup>8</sup>Functional Imaging Laboratory, Department of Imaging Neuroscience, UCL Queen Square Institute of Neurology, 12 Queen Square, London WC1N 3AR, UK  
