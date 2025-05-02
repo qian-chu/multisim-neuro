@@ -36,11 +36,11 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
 
 html_theme_options = {
     "navigation_depth": 4,
     "show_nav_level": 2,
+    "show_toc_level": 2,
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
@@ -54,7 +54,6 @@ nbsphinx_prolog = """
     .toctree-wrapper > ul { display: none !important; }
     </style>
 """
-
 
 # Fix potential warnings for notebooks
 nbsphinx_allow_errors = True

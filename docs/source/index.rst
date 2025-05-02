@@ -81,6 +81,6 @@ If you use this toolbox in your research, please cite the accompanying paper (in
    :maxdepth: 2
    :hidden:
 
-   Simulator class <api/index>
+   Simulator class <api>
    Tutorials <tutorial/index>
 
