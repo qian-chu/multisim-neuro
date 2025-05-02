@@ -11,7 +11,7 @@ Features
 - Inject effects at specified time windows and across specified conditions
 - Control signal-to-noise ratio, spatial covariance, temporal smoothing, and between-subject variability
 - Generate multiple subjects for group-level statistical analysis
-- Export to [MNE-Python](https://mne.tools/) and [EEGLAB](https://sccn.ucsd.edu/eeglab/) formats
+- Export to `MNE-Python <https://mne.tools/>`_ and `EEGLAB <https://sccn.ucsd.edu/eeglab/>`_ formats
 
 Installation
 ------------
@@ -22,7 +22,7 @@ You can install the package using pip:
 
    pip install multisim
 
-To install with full dependencies (e.g., for notebooks or visualization):
+To install with full dependencies (e.g., for notebooks, visualization, or exporting to other formats):
 
 .. code-block:: bash
 

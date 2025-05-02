@@ -18,6 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 docs = ["pydata-sphinx-theme", "nbsphinx", "ruff", "ipython"]
 export = ["mne", "eeglabio"]
+full = ["multisim[docs,export]"]
 
 [project.urls]
 Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
