@@ -86,9 +86,9 @@ where:
 
 The noise term is drawn from a multivariate normal distribution:
 
-$
-\boldsymbol{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma}),
-$
+$$
+\boldsymbol{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma})
+$$
 
 where $\sigma = \texttt{noise\_std}$ and $\mathbf{\Sigma} = \texttt{spat\_cov}$ denotes the spatial covariance of the sensors (default: identity).
 
