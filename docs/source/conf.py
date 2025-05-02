@@ -35,6 +35,9 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
+highlight_language = "python"
+pygments_style = "sphinx"
+
 
 html_theme_options = {
     "navigation_depth": 4,

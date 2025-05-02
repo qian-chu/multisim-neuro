@@ -1,21 +1,7 @@
-meeg\_simulator package
-=======================
+Simulator
+=========
 
-Submodules
-----------
-
-meeg\_simulator.simulator module
---------------------------------
-
-.. automodule:: multisim.Simulator
+.. autoclass:: multisim.Simulator
    :members:
-   :show-inheritance:
    :undoc-members:
-
-Module contents
----------------
-
-.. automodule:: multisim
-   :members:
    :show-inheritance:
-   :undoc-members:
