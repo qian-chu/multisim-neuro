@@ -10,7 +10,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../../"))
 
-project = "meeg_simulator"
+project = "multisim"
 copyright = "2025, Alex Lepauvre"
 author = "Alex Lepauvre"
 release = "0.0.1"
@@ -42,7 +42,7 @@ html_theme_options = {
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
-    "logo": {"text": "MEEG Simulator"},
+    "logo": {"text": "multisim"},
 }
 nbsphinx_prolog = """
 .. raw:: html
