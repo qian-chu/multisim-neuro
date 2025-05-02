@@ -1,7 +1,9 @@
-API Reference
-=============
+:html_theme.sidebar_secondary.remove: true
 
-.. automodule:: multisim.simulator
+Simulator class reference
+=========================
+
+.. autoclass:: multisim.Simulator
    :members:
    :undoc-members:
    :show-inheritance:
