@@ -44,7 +44,7 @@ class Simulator:
         and reciprocally. Default is None (use effect size instead).
     effect_size : array, shape (n_effects,), optional
         Standardized multivariate effect size (Mahalanobis distance) for each effect.
-        Internally converted to an amplitude `a` (which scales the spread of the betas) 
+        Internally converted to an amplitude `a` (which scales the spread of the betas)
         by solving:
             d' = a / σ · √(vᵀ Σ⁻¹ v)
         for a, where
@@ -159,14 +159,16 @@ class Simulator:
             if effect_size.shape != (len(effects),):
                 raise ValueError("'effect_size' must match len(effects).")
             # Normalize effect size by the spatial covariance matrix:
-            inv_cov = np.linalg.pinv(ch_cov)               # pseudoinverse
-            denom = np.sqrt(np.trace(inv_cov))               # = √n_channels  if Σ = I
-            effects_amp = effect_size * noise_std / denom # guarantees d′ = effect_size
+            inv_cov = np.linalg.pinv(ch_cov)  # pseudoinverse
+            denom = np.sqrt(np.trace(inv_cov))  # = √n_channels  if Σ = I
+            effects_amp = effect_size * noise_std / denom  # guarantees d′ = effect_size
 
         else:  # default: effect size of 0.5 (mahlanobis distance)
-            inv_cov = np.linalg.pinv(ch_cov)      # safe inverse
-            denom   = np.sqrt(np.trace(inv_cov))    # = √n_channels if Σ = I
-            effects_amp = np.full(len(effects), 0.5) * noise_std / denom # guarantees d′ = effect_size
+            inv_cov = np.linalg.pinv(ch_cov)  # safe inverse
+            denom = np.sqrt(np.trace(inv_cov))  # = √n_channels if Σ = I
+            effects_amp = (
+                np.full(len(effects), 0.5) * noise_std / denom
+            )  # guarantees d′ = effect_size
 
         self.X = X
         self.noise_std = noise_std
@@ -228,19 +230,21 @@ class Simulator:
                 start_t, end_t = t_win[idx]
                 # Mask for t in [start_t, end_t]
                 mask = (t >= start_t) & (t <= end_t)
-                subject_effect_amp[idx] = np.random.normal(loc=effects_amp[idx], scale=intersub_noise_std)
+                subject_effect_amp[idx] = np.random.normal(
+                    loc=effects_amp[idx], scale=intersub_noise_std
+                )
                 cv[mask, eff_cond] = subject_effect_amp[idx]
 
             # --------  OPTIONAL  temporal convolution  (causal only)  --------
             if kern is not None:
                 for c in range(self.n_exp_conditions):
                     # causal (forward-only) convolution, keep length = n_samples
-                    cv[:, c] = np.convolve(cv[:, c], kern, mode='full')[:n_samples]
+                    cv[:, c] = np.convolve(cv[:, c], kern, mode="full")[:n_samples]
                     # Ensure that the max value after convolution matches the effect_amp specified
                     peak = np.max(np.abs(cv[:, c]))
                     if peak <= 0:
                         raise RuntimeError("Convolution dropped all signal!")
-                    cv[:,c] *= (subject_effect_amp[idx] / peak)
+                    cv[:, c] *= subject_effect_amp[idx] / peak
 
             # Flatten cv to shape [n_samples*self.n_exp_conditions] so we can build a diagonal "selector"
             # and multiply it by random effects. That ensures only certain (time, condition) combos
@@ -329,7 +333,7 @@ class Simulator:
 
         # Set default condition names if not provided
         if cond_names is None:
-            cond_names = [f"cond{i+1}" for i in range(n_conds)]
+            cond_names = [f"cond{i + 1}" for i in range(n_conds)]
 
         if len(cond_names) != n_conds:
             raise ValueError(
@@ -357,8 +361,11 @@ class Simulator:
         event_nums = np.array([event_id[label] for label in labels])
 
         # Onset sample of each trial (first sample + number of sample in each trial + 1 for all trials but the first)
-        onsets = int(round(-self.tmin * self.sfreq)) + self.data[0].shape[2] * np.arange(n_trials) + (np.arange(n_trials) > 0).astype(int)
-
+        onsets = (
+            int(round(-self.tmin * self.sfreq))
+            + self.data[0].shape[2] * np.arange(n_trials)
+            + (np.arange(n_trials) > 0).astype(int)
+        )
 
         # Events array [onset, 0, event_id]
         events = np.zeros((n_trials, 3), dtype=int)
@@ -368,12 +375,12 @@ class Simulator:
         return events, event_id
 
     def export_to_mne(
-            self, 
-            ch_type: str = "eeg", 
-            X: np.ndarray = None,
-            cond_names: list = None,
-            mapping: dict = None
-            ) -> list:
+        self,
+        ch_type: str = "eeg",
+        X: np.ndarray = None,
+        cond_names: list = None,
+        mapping: dict = None,
+    ) -> list:
         """
         Export the simulated data to MNE-Python format.
 
@@ -406,23 +413,27 @@ class Simulator:
             )
         # Create events:
         events, event_id = self.generate_events(X, cond_names, mapping)
-        
+
         # Prepare info for epochs object in the end
         info = create_info(
             [f"CH{n:03}" for n in range(self.n_channels)],
             ch_types=[ch_type] * self.n_channels,
-            sfreq=self.sfreq
+            sfreq=self.sfreq,
         )
-        epochs_list = [EpochsArray(data, info, tmin=self.tmin, events=events, event_id=event_id) for data in self.data]
+        epochs_list = [
+            EpochsArray(data, info, tmin=self.tmin, events=events, event_id=event_id)
+            for data in self.data
+        ]
         return epochs_list
-    
+
     def export_to_eeglab(
         self,
         X: np.ndarray = None,
         cond_names: list = None,
         mapping: dict = None,
-        root: str = '.', 
-        fname_template: str = 'sub-{:02d}.set') -> None:
+        root: str = ".",
+        fname_template: str = "sub-{:02d}.set",
+    ) -> None:
         """
         Export the simulated data to EEGLAB format (save to file).
 
@@ -453,14 +464,14 @@ class Simulator:
                 "    pip install eeglabio\n"
                 "    conda install -c conda-forge eeglabio"
             )
-        
+
         # Ensure fname_template has a placeholder
-        if '{' not in fname_template:
+        if "{" not in fname_template:
             # No placeholder: append a subject number at the end
-            if fname_template.endswith('.set'):
-                fname_template = fname_template[:-4] + '_{:02d}.set'
+            if fname_template.endswith(".set"):
+                fname_template = fname_template[:-4] + "_{:02d}.set"
             else:
-                fname_template = fname_template + '_{:02d}.set'
+                fname_template = fname_template + "_{:02d}.set"
 
         if not os.path.exists(root):
             os.makedirs(root)
@@ -471,10 +482,19 @@ class Simulator:
         for i, epo in enumerate(self.data):
             filename = fname_template.format(i)
             filepath = os.path.join(root, filename)
-            export_set(filepath, epo, self.sfreq, events, 
-                       self.tmin, self.tmax, 
-                       [f"CH{n:03}" for n in range(self.n_channels)],
-                       event_id=event_id, ch_locs=None, annotations=None, 
-                       ref_channels='common', precision='single')
+            export_set(
+                filepath,
+                epo,
+                self.sfreq,
+                events,
+                self.tmin,
+                self.tmax,
+                [f"CH{n:03}" for n in range(self.n_channels)],
+                event_id=event_id,
+                ch_locs=None,
+                annotations=None,
+                ref_channels="common",
+                precision="single",
+            )
 
         return None
