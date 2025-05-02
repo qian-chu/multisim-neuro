@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "meeg_simulator"
+name = "multisim"
 version = "0.0.1"
 description = "A package for simulating MEEG data"
 authors = [
@@ -25,7 +25,7 @@ Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
 Repository = "https://github.com/AlexLepauvre/meeg_simulator"
 
 [tool.setuptools]
-packages = ["meeg_simulator"]  # Automatically find the package
+packages = ["multisim"]  # Automatically find the package
 
 [tool.setuptools.package-data]
-"meeg_simulator" = ["*.json", "*.csv"]  # Include additional data files if needed
+"multisim" = ["*.json", "*.csv"]  # Include additional data files if needed
