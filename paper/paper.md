@@ -1,15 +1,52 @@
-# SimMEG: A Python Toolbox for Simulating MEG/EEG Datasets with Known “Ground Truth” Effects
-
-**Alex Lepauvre**<sup>1,2</sup>, **Qian Chu**<sup>1,3,4,5</sup>, **Lucia Melloni**<sup>1,6,7</sup>, **Peter Zeidman**<sup>8</sup>
-
-<sup>1</sup>Neural Circuits, Consciousness and Cognition Research Group, Max Planck Institute for Empirical Aesthetics, Frankfurt am Main, 60322, Germany  
-<sup>2</sup>Donders Institute for Brain, Cognition and Behaviour, Radboud University Nijmegen, Nijmegen, 6500 HB, The Netherlands  
-<sup>3</sup>Max Planck – University of Toronto Centre for Neural Science and Technology  
-<sup>4</sup>Krembil Brain Institute, Toronto Western Hospital, University Health Network, Toronto, ON, Canada  
-<sup>5</sup>Institute of Biomedical Engineering, University of Toronto, Toronto, ON, Canada  
-<sup>6</sup>Department of Neurology, New York University Grossman School of Medicine, New York, NY, USA  
-<sup>7</sup>Predictive Brain Department, Research Center One Health Ruhr, University Alliance Ruhr, Faculty of Psychology, Ruhr University Bochum, Bochum, Germany  
-<sup>8</sup>Functional Imaging Laboratory, Department of Imaging Neuroscience, UCL Queen Square Institute of Neurology, 12 Queen Square, London WC1N 3AR, UK  
+---
+title: 'MultiSim: A Python Toolbox for Simulating MEG/EEG Datasets with Known “Ground Truth” Effects'
+tags:
+  - Python
+  - neuroscience
+  - EEG
+  - MEG
+  - simulation
+authors:
+  - name: Alex Lepauvre
+    orcid: 0000-0002-4191-1578
+    corresponding: true
+    affiliation: "1, 2"
+  - name: Qian Chu
+    orcid: 0000-0003-2308-6102
+    affiliation: "1, 3, 4, 5"
+  - name: Lucia Melloni
+    orcid: 0000-0001-8743-5071
+    affiliation: "1, 6, 7"
+  - name: Peter Zeidman
+    orcid: 0000-0003-3610-6619
+    affiliation: "8"
+affiliations:
+  - name: Neural Circuits, Consciousness and Cognition Research Group, Max Planck Institute for Empirical Aesthetics, Frankfurt am Main, Germany
+    index: 1
+    ror: 000rdbk18
+  - name: Donders Institute for Brain, Cognition and Behaviour, Radboud University Nijmegen, Nijmegen, The Netherlands
+    index: 2
+    ror: 016xsfp80
+  - name: Max Planck – University of Toronto Centre for Neural Science and Technology
+    index: 3
+  - name: Krembil Brain Institute, Toronto Western Hospital, University Health Network, Toronto, ON, Canada
+    index: 4
+    ror: 042xt5161
+  - name: Institute of Biomedical Engineering, University of Toronto, Toronto, ON, Canada
+    index: 5
+    ror: 03dbr7087
+  - name: Department of Neurology, New York University Grossman School of Medicine, New York, NY, USA
+    index: 6
+    ror: 0190ak572
+  - name: Predictive Brain Department, Research Center One Health Ruhr, University Alliance Ruhr, Faculty of Psychology, Ruhr University Bochum, Bochum, Germany
+    index: 7
+    ror: 04tsk2644
+  - name: Functional Imaging Laboratory, Department of Imaging Neuroscience, UCL Queen Square Institute of Neurology, 12 Queen Square, London, UK
+    index: 8
+    ror: 02jx3x895
+date: 2 May 2025
+bibliography: paper.bib
+---
 
 # Summary
 In MEG/EEG research, validating analysis pipelines is hampered by the lack of ground-truth neural signals in real data. SimMEG fills this gap by generating realistic, time-locked multivariate effects of known magnitude that you can inject into simulated sensor data. You can then run any pipeline—e.g. decoding, sensor-level statistics, or source estimation—against these datasets to benchmark sensitivity and specificity. 
