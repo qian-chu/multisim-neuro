@@ -46,6 +46,9 @@ affiliations:
     ror: 02jx3x895
 date: 2 May 2025
 bibliography: paper.bib
+header-includes:
+  - \usepackage{amsmath}
+  - \providecommand{\bm}[1]{\boldsymbol{#1}}
 ---
 
 # Summary
