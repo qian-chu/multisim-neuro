@@ -135,8 +135,6 @@ $$
 
 All other entries of $\mathbf{B}_s$ remain zero.
 
----
-
 ## From effect size to decoding accuracy
 
 Because $\lVert \widetilde{\mathbf{m}} \rVert_2 = 1$, the effective Mahalanobis distance between classes at each time point is:
