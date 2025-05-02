@@ -44,7 +44,7 @@ html_theme_options = {
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
-    "logo": "logo.svg",
+    "logo": {"image_light": "logo.svg"}
 }
 nbsphinx_prolog = """
 .. raw:: html
