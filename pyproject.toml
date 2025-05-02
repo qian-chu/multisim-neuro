@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx", "ruff", "ipython"]
+docs = ["pydata-sphinx-theme", "nbsphinx", "ruff", "ipython"]
 export = ["mne", "eeglabio"]
 
 [project.urls]
