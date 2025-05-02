@@ -7,7 +7,7 @@ Submodules
 meeg\_simulator.simulator module
 --------------------------------
 
-.. automodule:: meeg_simulator.simulator
+.. automodule:: multisim.Simulator
    :members:
    :show-inheritance:
    :undoc-members:
@@ -15,7 +15,7 @@ meeg\_simulator.simulator module
 Module contents
 ---------------
 
-.. automodule:: meeg_simulator
+.. automodule:: multisim
    :members:
    :show-inheritance:
    :undoc-members:
