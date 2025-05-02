@@ -1,7 +1,7 @@
 API Reference
 =============
 
-.. automodule:: multisim.Simulator
+.. automodule:: multisim.simulator
    :members:
    :undoc-members:
    :show-inheritance:
