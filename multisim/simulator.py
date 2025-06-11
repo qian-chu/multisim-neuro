@@ -19,11 +19,11 @@ class Simulator:
     Parameters
     ----------
     X : array, shape (n_epochs, n_experimental_conditions)
-        Between-trial design matrix specifying experimental manipulations.
+        Trial-by-trial design matrix specifying experimental manipulations.
     noise_std : float
         Standard deviation of additive Gaussian noise (applied before channel covariance).
     n_channels : int
-        Number of channels (e.g., sensors or components) in the simulated data.
+        Number of channels (e.g., sensors or components) to simulate.
     n_subjects : int
         Number of subjects to simulate.
     tmin : float
@@ -32,17 +32,17 @@ class Simulator:
         End time (in seconds) of each epoch.
     sfreq : float
         Sampling frequency in Hz.
-    t_win : array, shape (n_effects, 2)
+    t_win : array-like, shape (n_effects, 2)
         Time windows (start, end) in seconds where each experimental effect is nonzero.
-    effects : array, shape (n_effects,)
+    effects : array-like, shape (n_effects,)
         Indices of the experimental conditions (columns of ``X``) associated with
         time-locked effects. Each entry corresponds to a row in ``t_win``.
-    effects_amp : array, shape (n_effects,) | None, optional
+    effects_amp : array-like, shape (n_effects,), optional
         Amplitudes of the effects. Effects are simulated by sampling beta parameters
         from a normal distribution across channels, with ``effects_amp`` defining
-        the variance of the distribution. Do not specify if you use effect size
+        the variance of the distribution. Do not specify if you use ``effect size``
         and reciprocally. Default is None (use effect size instead).
-    effect_size : array, shape (n_effects,), optional
+    effect_size : array-like, shape (n_effects,), optional
         Standardized multivariate effect size (Mahalanobis distance) for each effect.
         Internally converted to an amplitude :math:`a` (which scales the spread of the betas)
         by solving:
@@ -82,7 +82,7 @@ class Simulator:
     - This function follows the **same methodological principles** as ``DEMO_CVA_RSA.m`` from SPM,
       but extends it by adding time-resolved experimental effects.
     - The original implementation in SPM was developed by **Karl Friston and Peter Zeidman**.
-    - The generated data follows an event-related structure, suitable for 
+    - The generated data follows an event-related structure, suitable for
       classification and decoding analyses.
     - Effects are injected into selected experimental conditions based on ``X``.
 
@@ -100,10 +100,12 @@ class Simulator:
     >>> X = np.random.randn(100, 2)  # 100 trials, 2 experimental conditions
     >>> t_win = np.array([[0.2, 0.5]])  # Effect between 200-500 ms
     >>> effects = np.array([1])  # Effect corresponds to second column of X
-    >>> epochs_list = simulate_data(X, noise_std=0.1, n_channels=64, n_subjects=20,
-    ...                             tmin=-0.2, tmax=0.8, sfreq=250,
-    ...                             t_win=t_win, effects=effects)
-    >>> print(len(epochs_list))  # Should return 20 subjects
+    >>> sims = Simulator(
+    ...   X, noise_std=0.1, n_channels=64, n_subjects=20,
+    ...   tmin=-0.2, tmax=0.8, sfreq=250,
+    ...   t_win=t_win, effects=effects
+    ...   )
+    >>> print(len(sims.data))  # Should return 20 subjects
     """
 
     def __init__(
@@ -140,11 +142,17 @@ class Simulator:
             )
         if kern is not None:
             if len(kern) == 0 or kern.ndim != 1:
-                raise ValueError("kern must be a 1-D numpy array.")
+                raise ValueError("'kern' must be a 1-D numpy array.")
             # Ensure float dtype for later maths
             kern = kern.astype(float)
             # Normalize the kernel (so that it sums up to 1):
             kern = kern / kern.sum()
+        invalid_effects = ~np.isin(effects, np.arange(X.shape[1]))
+        if invalid_effects.any():
+            raise ValueError(
+                f"Invalid effect indices found in 'effects': {effects[invalid_effects]}. "
+                "They must be within the range of experimental conditions in X."
+            )
 
         # ------------------------------------------------------------------
         #  Resolve effect amplitudes (channel-norm–corrected)

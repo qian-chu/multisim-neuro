@@ -21,9 +21,21 @@ release = "0.0.1"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "mne": ("https://mne.tools/stable/", None),
+}
+
+numpydoc_xref_param_type = True
+numpydoc_xref_aliases = {
+    "array-like": ":term:`array_like <numpy:array_like>`",
+}
 
 highlight_language = "python"
 pygments_style = "sphinx"
@@ -45,7 +57,7 @@ html_theme_options = {
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
-    "logo": {"image_light": "logo.svg"}
+    "logo": {"image_light": "logo.svg"},
 }
 nbsphinx_prolog = """
 .. raw:: html
