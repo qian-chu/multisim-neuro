@@ -32,21 +32,11 @@ class Simulator:
         End time (in seconds) of each epoch.
     sfreq : float
         Sampling frequency in Hz.
-    t_win : array-like, shape (n_effects, 2)
-        Time windows (start, end) in seconds where each experimental effect is nonzero.
-    effects : array-like, shape (n_effects,)
-        Indices of the experimental conditions (columns of ``X``) associated with
-        time-locked effects. Each entry corresponds to a row in ``t_win``.
-    effects_amp : array-like, shape (n_effects,), optional
-        Amplitudes of the effects. Effects are simulated by sampling beta parameters
-        from a normal distribution across channels, with ``effects_amp`` defining
-        the variance of the distribution. Do not specify if you use ``effect size``
-        and reciprocally. Default is None (use effect size instead).
-    effect_size : array-like, shape (n_effects,), optional
-        Standardized multivariate effect size (Mahalanobis distance) for each effect.
+    effect_size : array-like, shape (n_experimental_conditions,)
+        Standardized multivariate effect size (Mahalanobis distance) for each contrast/experimental
+        conditions in the design matrix. Set to 0 effects you do not wish to express in the data
         Internally converted to an amplitude :math:`a` (which scales the spread of the betas)
         by solving:
-
         .. math::
 
             d' = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
@@ -58,6 +48,14 @@ class Simulator:
         between condition centroids, yielding theoretical decoding
         accuracy ≈ :math:`\\Phi(d'/2)`. Do not use if you specify effects_amp directly.
         Default is 0.5.
+    t_win : array-like, shape (n_experimental_conditions, [list])
+        Time windows (start, end) in seconds for each experimental condition. You can specify more than
+        one time window for each effect. 
+    effects_amp : array-like, shape (n_effects,), optional
+        Amplitudes of the effects. Effects are simulated by sampling beta parameters
+        from a normal distribution across channels, with ``effects_amp`` defining
+        the variance of the distribution. Do not specify if you use ``effect size``
+        and reciprocally. Default is None (use effect size instead).
     ch_cov : array, shape (n_channels, n_channels) | None, optional
         Channel data covariance matrix for the simulated data. If None, an identity
         matrix is used (i.e., no cross-channel correlations).
@@ -118,9 +116,8 @@ class Simulator:
         tmax: float,
         sfreq: float,
         t_win: np.ndarray,
-        effects: np.ndarray,
+        effect_size: np.ndarray,
         effects_amp: Optional[np.ndarray] = None,
-        effect_size: Optional[np.ndarray] = None,
         ch_cov: Optional[np.ndarray] = None,
         kern: Optional[np.ndarray] = None,
         intersub_noise_std: Optional[float] = 0,
@@ -128,7 +125,13 @@ class Simulator:
         # ---------------------------------------------------------------------
         # 1. Check inputs & compute the number of samples
         # ---------------------------------------------------------------------
-        if len(effects) != len(t_win):
+        if len(effect_size) != X.shape[1]:
+            raise ValueError(
+                "The dimension of 'effect_size' does not match the number of conditions in X! "
+                "There should be one effect size entry for each column of X. If you wish to "
+                "not introduce effects, set them to 0."
+            )
+        if len(effect_size) != len(t_win):
             raise ValueError(
                 "The dimension of 'effects' and 't_win' do not match! "
                 "There should be exactly one time window for each effect."
@@ -147,36 +150,25 @@ class Simulator:
             kern = kern.astype(float)
             # Normalize the kernel (so that it sums up to 1):
             kern = kern / kern.sum()
-        invalid_effects = ~np.isin(effects, np.arange(X.shape[1]))
-        if invalid_effects.any():
-            raise ValueError(
-                f"Invalid effect indices found in 'effects': {effects[invalid_effects]}. "
-                "They must be within the range of experimental conditions in X."
-            )
+
+        if effects_amp is not None and len(effects_amp) != X.shape[1]:
+            raise ValueError("If 'effects_amp' specified, must have one entry per experimental " \
+            "condition.")
 
         # ------------------------------------------------------------------
-        #  Resolve effect amplitudes (channel-norm–corrected)
+        #  Resolve effect amplitudes (channel-norm-corrected)
         # ------------------------------------------------------------------
-        if effects_amp is not None and effect_size is not None:
-            raise ValueError("Pass either 'effects_amp' or 'effect_size', not both.")
 
-        if effects_amp is not None:
-            effects_amp = np.asarray(effects_amp, float) / np.sqrt(n_channels)
-
-        elif effect_size is not None:
-            effect_size = np.asarray(effect_size, float)
-            if effect_size.shape != (len(effects),):
-                raise ValueError("'effect_size' must match len(effects).")
-            # Normalize effect size by the channel covariance matrix:
-            inv_cov = np.linalg.pinv(ch_cov)  # pseudoinverse
-            denom = np.sqrt(np.trace(inv_cov))  # = √n_channels  if Σ = I
-            effects_amp = effect_size * noise_std / denom  # guarantees d′ = effect_size
-
-        else:  # default: effect size of 0.5 (mahlanobis distance)
-            inv_cov = np.linalg.pinv(ch_cov)  # safe inverse
-            denom = np.sqrt(np.trace(inv_cov))  # = √n_channels if Σ = I
+        # Normalize effect size by the channel covariance matrix:
+        inv_cov = np.linalg.pinv(ch_cov)  # pseudoinverse
+        denom = np.sqrt(np.trace(inv_cov))  # = √n_channels  if Σ = I
+        if effects_amp is None:
             effects_amp = (
-                np.full(len(effects), 0.5) * noise_std / denom
+            np.asarray(effect_size, float) * noise_std / denom 
+            ) # guarantees d′ = effect_size
+        else:
+            effects_amp = (
+                np.asarray(effects_amp, float) * noise_std / denom
             )  # guarantees d′ = effect_size
 
         self.X = X
@@ -187,7 +179,6 @@ class Simulator:
         self.tmax = tmax
         self.sfreq = sfreq
         self.t_win = t_win
-        self.effects = effects
         self.effects_amp = effects_amp
         self.ch_cov = ch_cov
         self.n_epochs, self.n_exp_conditions = X.shape
@@ -234,7 +225,9 @@ class Simulator:
             cv = np.zeros((n_samples, self.n_exp_conditions), dtype=float)
             # Preallocate for storing subject specific amplitudes:
             subject_effect_amp = np.zeros(effects_amp.shape)
-            for idx, eff_cond in enumerate(effects):
+            for idx in range(len(effects_amp)):
+                if effects_amp[idx] == 0:
+                    continue
                 # Identify which samples lie in the desired time window
                 start_t, end_t = t_win[idx]
                 # Mask for t in [start_t, end_t]
@@ -242,7 +235,7 @@ class Simulator:
                 subject_effect_amp[idx] = np.random.normal(
                     loc=effects_amp[idx], scale=intersub_noise_std
                 )
-                cv[mask, eff_cond] = subject_effect_amp[idx]
+                cv[mask, idx] = subject_effect_amp[idx]
 
             # --------  OPTIONAL  temporal convolution  (causal only)  --------
             if kern is not None:
