@@ -7,13 +7,15 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+import multisim
 
 sys.path.insert(0, os.path.abspath("../../"))
 
 project = "multisim"
 copyright = "2025, Alex Lepauvre"
 author = "Alex Lepauvre"
-release = "0.0.1"
+
+release = multisim.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -21,9 +23,21 @@ release = "0.0.1"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "mne": ("https://mne.tools/stable/", None),
+}
+
+numpydoc_xref_param_type = True
+numpydoc_xref_aliases = {
+    "array-like": ":term:`array_like <numpy:array_like>`",
+}
 
 highlight_language = "python"
 pygments_style = "sphinx"
@@ -36,16 +50,16 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-html_favicon = "favicon.ico" 
-html_static_path = ["_static"]
+html_favicon = "favicon.ico"
 
 html_theme_options = {
     "navigation_depth": 4,
     "show_nav_level": 2,
+    "show_toc_level": 2,
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
-    "logo": {"image_light": "logo.svg"}
+    "logo": {"image_light": "logo.svg"},
 }
 nbsphinx_prolog = """
 .. raw:: html
@@ -56,6 +70,7 @@ nbsphinx_prolog = """
     </style>
 """
 
+autosummary_generate = True
 
 # Fix potential warnings for notebooks
 nbsphinx_allow_errors = True

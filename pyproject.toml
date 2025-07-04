@@ -4,21 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multisim"
-version = "0.0.1"
+dynamic = ["version"]
 description = "A package for simulating MEEG data"
 authors = [
     { name = "Alex Lepauvre", email = "alex.lepauvre@gmail.com" }
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-dependencies = [
-    "numpy",
-    "scipy",
-]
+dependencies = ["numpy"]
 
 [project.optional-dependencies]
-docs = ["sphinx", "sphinx-rtd-theme", "nbsphinx", "ruff", "ipython"]
+docs = ["pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython"]
 export = ["mne", "eeglabio"]
+dev = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
@@ -29,3 +27,6 @@ packages = ["multisim"]  # Automatically find the package
 
 [tool.setuptools.package-data]
 "multisim" = ["*.json", "*.csv"]  # Include additional data files if needed
+
+[tool.setuptools.dynamic]
+version = {attr = "multisim.__version__"}
