@@ -7,13 +7,15 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+import multisim
 
 sys.path.insert(0, os.path.abspath("../../"))
 
 project = "multisim"
 copyright = "2025, Alex Lepauvre"
 author = "Alex Lepauvre"
-release = "0.0.1"
+
+release = multisim.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -67,6 +69,8 @@ nbsphinx_prolog = """
     .toctree-wrapper > ul { display: none !important; }
     </style>
 """
+
+autosummary_generate = True
 
 # Fix potential warnings for notebooks
 nbsphinx_allow_errors = True
