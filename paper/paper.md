@@ -41,10 +41,10 @@ affiliations:
   - name: Predictive Brain Department, Research Center One Health Ruhr, University Alliance Ruhr, Faculty of Psychology, Ruhr University Bochum, Bochum, Germany
     index: 7
     ror: 04tsk2644
-  - name: Functional Imaging Laboratory, Department of Imaging Neuroscience, UCL Queen Square Institute of Neurology, 12 Queen Square, London, UK
+  - name: Wellcome Centre for Human Neuroimaging, Institute of Neurology, University College London, London, UK
     index: 8
     ror: 02jx3x895
-date: 2 May 2025
+date: 1 July 2025
 bibliography: paper.bib
 header-includes:
   - \usepackage{amsmath}
@@ -52,7 +52,7 @@ header-includes:
 ---
 
 # Summary
-In MEG/EEG research, validating analysis pipelines is hampered by the lack of ground-truth neural signals in real data. SimMEG fills this gap by generating realistic, time-locked multivariate effects of known magnitude that you can inject into simulated sensor data. You can then run any pipeline—e.g. decoding, sensor-level statistics, or source estimation—against these datasets to benchmark sensitivity and specificity. 
+In MEG/EEG research, validating analysis pipelines is hampered by the lack of ground-truth neural signals in real data. SimMEG fills this gap by generating realistic, time-locked multivariate effects of known magnitude that you can inject into simulated sensor data. You can then run any pipeline—e.g. decoding, sensor-level statistics, or source estimation—against these datasets to benchmark sensitivity and specificity.
 
 Key benefits include:
 
