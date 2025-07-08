@@ -180,10 +180,6 @@ class Simulator:
         if not isinstance(effects_in, (list, tuple)) or len(effects_in) == 0:
             raise ValueError("effects must be a non-empty list of dictionaries.")
 
-        # Compute the normalization constant for the effect size
-        inv_cov = np.linalg.pinv(self.ch_cov)
-        denom   = np.sqrt(np.trace(inv_cov))             # √C if Σ = I
-
         effect_val: List[Dict] = []
         for i, eff in enumerate(effects_in):
             if not isinstance(eff, dict):
@@ -211,11 +207,11 @@ class Simulator:
             if "effect_amp" not in eff and "effect_size" not in eff:
                 raise ValueError(f"Effect #{i}: must provide effect_size or effect_amp.")
 
-            if "effect_amp" in eff:
-                amp = float(eff["effect_amp"]) / np.sqrt(self.n_channels)
+            # now you don’t need the extra trace-based denominator:
+            if "effect_size" in eff:
+                amp = float(eff["effect_size"]) * self.noise_std
             else:
-                dprime = float(eff["effect_size"])
-                amp = dprime * self.noise_std / denom
+                amp = float(eff["effect_amp"]) / np.sqrt(self.n_channels)
 
             effect_val.append({
                 "col_idx": col_idx,
@@ -233,8 +229,11 @@ class Simulator:
         for eff in self.effects:
             # subject‑specific amplitude
             amp = self.rng.normal(loc=eff["base_amp"], scale=self.intersub_noise_std)
-            # random pattern, unit length in Euclidean norm (unit Mahalanobis after scaling)
-            pattern = self.rng.standard_normal(self.n_channels)
+            # generate random pattern
+            v = self.rng.standard_normal(self.n_channels)
+            # Normalize it to 1 Mahalanobis distance:
+            v /= np.sqrt(v @ np.linalg.pinv(self.ch_cov) @ v)        # unit Mahalanobis norm
+
             # build time resolved activation time course
             act = np.zeros(self.n_samples, float)
             for t0, t1 in eff["windows"]:
@@ -249,7 +248,7 @@ class Simulator:
             act *= amp / peak  # scale so max = amp
 
             # insert into β (broadcast (time,1)*(1,channel))
-            B3d[:, eff["col_idx"], :] += act[:, None] * pattern
+            B3d[:, eff["col_idx"], :] += act[:, None] * v
 
         # flatten to (condition*time, channels) with correct ordering
         B = np.transpose(B3d, (1, 0, 2)).reshape(self.n_exp_conditions * self.n_samples, 
