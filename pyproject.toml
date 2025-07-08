@@ -14,7 +14,7 @@ readme = "README.md"
 dependencies = ["numpy", "pandas"]
 
 [project.optional-dependencies]
-docs = ["pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython"]
+docs = ["pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython", "sphinxcontrib-bibtex"]
 export = ["mne", "eeglabio"]
 dev = ["pytest"]
 
