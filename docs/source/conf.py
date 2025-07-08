@@ -26,7 +26,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
-    "sphinxcontrib.bibtex"
+    "sphinxcontrib.bibtex",
     "myst_nb"
 ]
 
