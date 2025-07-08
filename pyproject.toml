@@ -11,7 +11,7 @@ authors = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-dependencies = ["numpy"]
+dependencies = ["numpy", "pandas"]
 
 [project.optional-dependencies]
 docs = ["pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython"]
