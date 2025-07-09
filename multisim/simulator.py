@@ -16,16 +16,6 @@ class Simulator:
     ----------
     X : pandas.DataFrame, shape (n_epochs, n_conditions)
         Trial-by-trial design matrix. **Must have named columns**.
-    noise_std : float
-        Standard deviation of additive Gaussian noise
-    n_channels : int
-        Number of channels (sensors/components).
-    n_subjects : int
-        Number of subjects.
-    tmin, tmax : float
-        Epoch start and end (seconds).
-    sfreq : float
-        Sampling frequency (Hz).
     effects : list[dict]
         Each dict describes **one multivariate pattern**.  Required keys
 
@@ -42,7 +32,16 @@ class Simulator:
         *One dict → one pattern.*  To share a pattern across several windows,
         list them in a single dict.  To have different patterns, provide
         multiple dicts with the same ``condition``.
-
+    noise_std : float
+        Standard deviation of additive Gaussian noise
+    n_channels : int
+        Number of channels (sensors/components).
+    n_subjects : int
+        Number of subjects.
+    tmin, tmax : float
+        Epoch start and end (seconds).
+    sfreq : float
+        Sampling frequency (Hz).
     ch_cov : ndarray | None, shape (n_channels, n_channels), default *identity*
         Channel covariance.
     kern : 1-D ndarray | None
@@ -59,6 +58,18 @@ class Simulator:
     For a single pattern *v* (vector across channels) with amplitude *a*,
     noise standard deviation *σ* and channel covariance *Σ*, the theoretical
     Mahalanobis distance between condition centroids is
+
+    .. math::
+
+            d' = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
+
+        where :math:`\\sigma` = ``noise_std``, :math:`\\Sigma` = ``ch_cov`` (channel covariance),
+        and :math:`v` = channel pattern (unit vector across channels).
+
+        Thus the injected β-weights satisfy a Mahalanobis distance of d'
+        between condition centroids, yielding theoretical decoding
+        accuracy ≈ :math:`\\Phi(d'/2)`. Do not use if you specify effects_amp directly.
+        Default is 0.5.
 
     .. math::
 
@@ -111,13 +122,13 @@ class Simulator:
     def __init__(
         self,
         X: pd.DataFrame,
+        effects: List[Dict],
         noise_std: float,
         n_channels: int,
         n_subjects: int,
         tmin: float,
         tmax: float,
         sfreq: float,
-        effects: List[Dict],
         ch_cov: Optional[np.ndarray] = None,
         kern: Optional[np.ndarray] = None,
         intersub_noise_std: float = 0.0,
@@ -278,7 +289,6 @@ class Simulator:
     def generate_events(
         self,
         X: np.ndarray = None,
-        cond_names: list = None,
         mapping: dict = None,
     ) -> tuple:
         """
@@ -303,36 +313,21 @@ class Simulator:
             Dictionary mapping label string to event integer.
         """
         if X is None:
-            X = self.X
+            X = self.X.copy()
 
-        n_trials, n_conds = X.shape
+        n_trials = X.shape[0]
 
-        # Set default condition names if not provided
-        if cond_names is None:
-            cond_names = [f"cond{i + 1}" for i in range(n_conds)]
+        # Replace condition id based on mapping:
+        if mapping is not None:
+            X.replace(mapping, inplace=True)
 
-        if len(cond_names) != n_conds:
-            raise ValueError(
-                f"Number of columns in X ({n_conds}) must match number of cond_names ({len(cond_names)})."
-            )
-
-        labels = []
-        for trial in X:
-            parts = []
-            for name, value in zip(cond_names, trial):
-                if mapping and name in mapping:
-                    label_value = mapping[name].get(value, str(value))
-                else:
-                    label_value = str(value)
-                parts.append(f"{name}_{label_value}")
-            labels.append("/".join(parts))
-
-        labels = np.array(labels)
+        # build one combined label per trial:  "condA_val1/condB_val2"
+        labels = (X.apply(lambda row: "/".join(f"{c}_{v}" for c, v in row.items()), axis=1)
+                    .to_numpy())
 
         # Unique combinations and event ID mapping
         unique_labels = np.unique(labels)
         event_id = {label: idx + 1 for idx, label in enumerate(unique_labels)}
-
         # Event numbers for each trial
         event_nums = np.array([event_id[label] for label in labels])
 
@@ -344,9 +339,7 @@ class Simulator:
         )
 
         # Events array [onset, 0, event_id]
-        events = np.zeros((n_trials, 3), dtype=int)
-        events[:, 0] = onsets
-        events[:, 2] = event_nums
+        events = np.column_stack([onsets, np.zeros_like(onsets), event_nums])
 
         return events, event_id
 
@@ -354,7 +347,6 @@ class Simulator:
         self,
         ch_type: str = "eeg",
         X: np.ndarray = None,
-        cond_names: list = None,
         mapping: dict = None,
         verbose: str = 'ERROR'
     ) -> list:
@@ -368,9 +360,6 @@ class Simulator:
             Default is ``'eeg'``.
         X : np.ndarray, shape (n_trials, n_conditions), optional
             Design matrix to use. If None, defaults to self.X.
-        cond_names : list of str, optional
-            Names of the experimental conditions (columns of X).
-            If None, defaults to ["cond1", "cond2", ..., "condN"].
         mapping : dict, optional
             Dictionary specifying custom label mapping per condition.
             Format: {condition_name: {original_value: label, ...}, ...}
@@ -392,7 +381,7 @@ class Simulator:
                 f"    conda install -c conda-forge mne"
             )
         # Create events:
-        events, event_id = self.generate_events(X, cond_names, mapping)
+        events, event_id = self.generate_events(X, mapping)
 
         # Prepare info for epochs object in the end
         info = create_info(
@@ -410,7 +399,6 @@ class Simulator:
     def export_to_eeglab(
         self,
         X: np.ndarray = None,
-        cond_names: list = None,
         mapping: dict = None,
         root: str = ".",
         fname_template: str = "sub-{:02d}.set",
@@ -458,7 +446,7 @@ class Simulator:
             os.makedirs(root)
 
         # Create events:
-        events, event_id = self.generate_events(X, cond_names, mapping)
+        events, event_id = self.generate_events(X, mapping)
 
         for i, epo in enumerate(self.data):
             filename = fname_template.format(i)
