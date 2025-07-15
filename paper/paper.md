@@ -1,10 +1,11 @@
 ---
-title: 'MultiSim: A Python Toolbox for Simulating MEG/EEG Datasets with Known “Ground Truth” Effects'
+title: 'MultiSim: A Python Toolbox for Simulating Datasets with time resolved multivariate effects
 tags:
   - Python
   - neuroscience
   - EEG
   - MEG
+  - iEEG
   - simulation
 authors:
   - name: Alex Lepauvre
@@ -63,99 +64,72 @@ Key benefits include:
 Below, we describe the rationale (Statement of needs), and the data-generation method (Methods), a hands-on example (Results), and potential extensions (Discussion).  
 
 # Statement of needs
+Multivariate pattern analysis (MVPA) is now routine in cognitive neuroscience for probing how the brain represents information {cite}`ritchie2019decoding;haynes2006decoding;kriegeskorte2008representational;haxby2001distributed;poldrack2009decoding`. Applied to high-temporal-resolution electrophysiology signals such as electro and magneto-encephalography (EEG and MEG respectively), decoding techniques reveal the millisecond-by-millisecond unfolding of mental representations {cite}`cichy2014resolving;king2014characterizing;king2016brain;cogitate2025adversarial;kok2017prior`. Strinkingly, despite the ubiquity of MVPA techniques, to our knowledge, not method exists to tests the sensitivity and specifity of decoding analysis pipelines, nor to estimate, before data collection, how many trials and how many participants are required to detect an effect of a given size
 
-MEG and EEG analysis pipelines—spanning from preprocessing and artifact rejection to sensor- or source-level statistics and multivariate decoding—struggle with three fundamental issues: the very high dimensionality of the data, low signal-to-noise ratios (SNR), and the fact that in real recordings we never know the “ground truth” about when or where genuine neural effects occur.  As a result, it is difficult to quantify how sensitive a given pipeline really is, or how often it produces false positives.
+MultiSim addresses this gap by letting investigators simulate time-resolved multi-channel signals with paramaters matching that of their recording setups, and specify multivariate effects with known timing, spatialization and strength, while controlling channel covariance, sensory noise and between subjects variability. Our algorithm produces multi-subject data sets in which ground truth effects are known. By running their pipeline on these data, researchers obtain a direct read-out of its true-positive rate (can it recover the injected effects?) and false-positive rate (does it raise alarms when nothing is present). In addition, our simulator can be used to perform computational power analysis, to determine the number of trials and subjects, by iterating over these parameters.
 
-SimMEG addresses this gap by enabling simulation of multivariate data with full control over the simulated effects. Users can define any experimental design matrix (conditions and contrasts), the parameters of the data set (number of trials, channels, participants and spatial covariance of the sensors), specify exactly when and how large each effect should be, to simulate entire subject cohorts.  Users can then run your custom analysis pipeline on these synthetic datasets and directly measure its ability to detect the planted effects—and its proclivity for false alarms—under realistic noise and covariance conditions. Importantly, this toolbox can be used to determine the ideal number of trials per subject and the number of subjects, given the parameters of their recording system and the predetermined size of the effect under investigation.
+This toolbox promotes best-practice MVPA by giving researchers a tailored benchmark for their specific experimental designs, a testbed for developing new decoding methods, and a principled way to check that planned studies are properly powered—ultimately enabling more reliable and efficient investigations of brain function.
 
-# Method
-
-## Generative model
-
-For each subject $s$, we simulate epoched data $\mathbf{Y}_s \in \mathbb{R}^{N_{\text{samples}} \times n_{\text{feat}}}$ according to the general linear model:
-
-$$
-\mathbf{Y}_s = \mathbf{X} \mathbf{B}_s + \mathbf{1} \boldsymbol{\beta}_{0,s}^\top + \boldsymbol{\varepsilon}_s,
-$$
-
-where: 
-
-- $\mathbf{X}$ is the full design matrix with $n_{samples} * n_{trials}$ rows and $n_{samples} * n_{conditions}$ columns
-- $\mathbf{B}$ is a matrix with $n_{samples} * n_{conditions}$ rows and $n_{features}$ columns 
-- $N_{\text{samples}} = n_{\text{epochs}} \times n_t$ is the total number of time samples across all trials, and $\mathbf{1} \boldsymbol{\beta}_{0,s}^\top$ is a subject-specific intercept term. The matrix $\mathbf{X}$ is the **full design matrix**, with one regressor for each combination of experimental condition and time point.
-
-The noise term is drawn from a multivariate normal distribution:
-
-$$
-\boldsymbol{\varepsilon}_s \sim \mathcal{N}(0, \sigma^2 \mathbf{\Sigma})
-$$
-
-where $\sigma = \texttt{noise\_std}$ and $\mathbf{\Sigma} = \texttt{spat\_cov}$ denotes the spatial covariance of the sensors (default: identity).
-
-## Constructing the regression coefficients
-
-Each experimental effect is defined by:
-
-- an experimental condition (column index $c$),
-- a temporal window $[t_{\text{on}}, t_{\text{off}}]$,
-- and a desired multivariate effect size $d$ (interpreted as a Cohen-style $d'$).
-
-We first create a rectangular temporal mask:
-
-$$
-m_t = \begin{cases}
-1 & \text{if } t_{\text{on}} \leq t \leq t_{\text{off}}, \\
-0 & \text{otherwise}
-\end{cases}
-$$
-
-If a causal kernel $h$ is provided, the temporal profile is convolved and rescaled to unit energy:
-
-$$
-\widetilde{\mathbf{m}} = \frac{\mathbf{m} * h}{\lVert \mathbf{m} * h \rVert_2}
-$$
-
-A uniform spatial pattern is used: $\mathbf{v} = \mathbf{1} \in \mathbb{R}^{n_{\text{feat}}}$. Its length under the inverse spatial covariance is:
-
-$$
-L = \sqrt{\mathbf{v}^\top \mathbf{\Sigma}^{-1} \mathbf{v}} = \sqrt{\operatorname{tr}(\mathbf{\Sigma}^{-1})}
-$$
-
-We then scale the amplitude for subject $s$ as:
-
-$$
-a_s = \mathcal{N}(d \cdot \sigma / L,\; \texttt{intersub\_noise\_std}^2)
-$$
-
-Finally, the corresponding rows in the coefficient matrix $\mathbf{B}_s$ are populated as:
-
-$$
-\beta_{c,t:s} = a_s \cdot \widetilde{m}_t \cdot \mathbf{v}^\top
-$$
-
-All other entries of $\mathbf{B}_s$ remain zero.
-
-## From effect size to decoding accuracy
-
-Because $\lVert \widetilde{\mathbf{m}} \rVert_2 = 1$, the effective Mahalanobis distance between classes at each time point is:
-
-$$
-d'_t = \frac{a_s}{\sigma} \cdot L = d
-$$
-
-This guarantees that the discriminability between class centroids at each time point matches the desired $d'$. Under standard assumptions of equal-covariance Gaussian classes, the theoretical decoding accuracy is:
-
-$$
-P_{\text{correct}} = \Phi\left(\frac{d}{2}\right)
-$$
-
-Thus, users can simulate data with known decoding difficulty:  
-e.g. $d = 0.2, 0.5, 1.0$ yields ~60%, 69%, and 84% expected accuracy respectively, independent of the number or covariance of features.
 
 # Code Quality and Documentation
-SimMEG is hosted on GitHub. Examples and API documentation are available on the platform XXX. We provide installation guides, algorithm introductions, and examples of using the package with Jupyter Notebook [REF]. The package is available on Linux, macOS and Windows for Python >=3.12
+SimMEG is hosted on GitHub. Examples and API documentation are available on the platform [here](https://alexlepauvre.github.io/meeg_simulator/). We provide installation guides, algorithm introductions, and examples of using the package with [Jupyter Notebook](https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html). We further provide the full mathetmatical details of our simulation [here](https://alexlepauvre.github.io/meeg_simulator/tutorial/06-mathematical_details.html). The package is available on Linux, macOS and Windows for Python >=3.12
 It can be installed with pip install simMEG. To ensure high code quality, all implementations adhere to the PEP8 code style [REF], enforced by ruff [REF], the code formatter black and the static analyzer prospector. The documentation is provided through docstrings using the NumPy conventions and build using Sphinx. 
 
 # Acknowledgements
 
 # References
+
+
+# Supplementary
+
+## Effect size formulation
+
+Effect sizes are simulated based on the Mahalanobis distance {cite}`mclachlan1999mahalanobis;mahalanobis1930tests`, which is a multivariate generalization of the standard z-score, taking into account the covariance structure of the data. For two classes, the Mahalanobis distance is defined as:
+
+$$\Delta =  \sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}$$
+
+where $\mu_{1}$ and $\mu_{2}$ are the centroids of each condition, $\Sigma$ is the covariance matrix and $T$ denotes matrix transpose. In our specific case, as the additive noise is multiplied by the covariance matrix to generate the final data, the effect size is equal to:
+
+$$\Delta =  \sqrt{(\mu_{1} - \mu_{2})^{T}(\sigma^{2}\Sigma)^{-1}(\mu_{1} - \mu_{2})}$$
+
+Which simplifies to:
+
+$$\Delta =  \frac{1}{\sigma}\sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}$$
+
+To simulate data with the require effect size $\Delta$, we generate a random vector $\tilde v$ by drawing a random number from a standard normal distribution for each channel (which are used as the $\Beta$ of our generative GLM). We then normalize that vector to have a Mahalanobis length of 1:
+
+$$ v = \frac{\tilde v}{\sqrt{(\tilde v)^{T}\Sigma^{-1}(\tilde v)}}$$
+
+The unit vector can be scaled by a constant $a$, such that when the centroids of each conditions are placed on each side of itm the distance between them matches the desired Mahalanobis distance:
+
+$$\Delta =  \frac{1}{\sigma} \sqrt{av^{T}\Sigma^{-1}av}$$
+
+Which simplifies to:
+
+$$\Delta =  \frac{a}{\sigma} \sqrt{v^{T}\Sigma^{-1}v}$$
+
+Where $v$ is a random vector of Mahalanobis length of 1 (i.e. Mahalanobis unit length vector) and $a$ is a constant to scale the effect up or down to achieve the desired effect size. As $v$ is of unit length, the term $\sqrt{v^{T}\Sigma^{-1}v}$ is equal to 1 and the equation simplifies to:
+
+$$\Delta =  \frac{a}{\sigma}$$
+
+To generate a multivariate pattern of the desired effect size, we have to resolve $a$ for $||av||_{\Sigma^{-1}}$ and $sigma$, which gives:
+
+$$a = \Delta * \sigma$$
+
+where: 
+- $\Delta =$``effect_size``
+- $\sigma$=``noise_std``
+
+By multplying our vector $v$ by the constant $a$, we ensure that the distance between the two classes matches the desired effect size.
+
+### Effect size and decoding accuracy
+
+With equal class covariances, a Bayes-optimal linear classifier achieves:
+
+$$\Phi(-\frac{1}{2}d')$$
+
+Where $\Phi$ is the normal distribution cummulative distribution function {cite}`mclachlan1999mahalanobis;mclachlan2005discriminant`. Accordingly, the maximal theoretical decoding accuracy is equal to:
+
+$$1 - \Phi(-\frac{1}{2}d')$$
+
+Thus an effect size of $d'=0.5$ implies a theoretical ceiling of ≈ 69 % accuracy, $d'=1$ gives ≈ 84 %, and so on.  By scaling the injected pattern according to the formula above, **multisim** ensures that simulated data respect this relationship irrespective of the number of channels or their covariance.
