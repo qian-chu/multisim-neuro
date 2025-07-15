@@ -13,4 +13,5 @@ Here you can find tutorials on how to use the meg simulator
    03-multisim_intersubject_noise
    04-multisim_cross_temporal_generalization
    05-multisim_effect_size
+   06-mathematical_details
 

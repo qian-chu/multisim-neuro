@@ -26,10 +26,14 @@ extensions = [
     "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
-    "sphinxcontrib.bibtex",
     "myst_nb",
-    "myst_parser",
+    "sphinxcontrib.bibtex",
     "sphinx.ext.mathjax",
+]
+
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
 ]
 
 intersphinx_mapping = {

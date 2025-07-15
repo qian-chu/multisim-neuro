@@ -6,6 +6,7 @@ tags:
   - EEG
   - MEG
   - iEEG
+  - LFP
   - simulation
 authors:
   - name: Alex Lepauvre
