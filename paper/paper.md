@@ -1,5 +1,5 @@
 ---
-title: 'MultiSim: A Python Toolbox for Simulating Datasets with time resolved multivariate effects
+title: 'MultiSim: A Python Toolbox for Simulating Datasets with time resolved multivariate effects'
 tags:
   - Python
   - neuroscience
