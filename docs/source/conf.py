@@ -27,7 +27,7 @@ extensions = [
     "numpydoc",
     "nbsphinx",
     "sphinxcontrib.bibtex",
-    "myst_nb"
+    "myst_nb",
     "myst_parser",
     "sphinx.ext.mathjax",
 ]
