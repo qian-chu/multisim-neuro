@@ -28,6 +28,8 @@ extensions = [
     "nbsphinx",
     "sphinxcontrib.bibtex",
     "myst_nb"
+    "myst_parser",
+    "sphinx.ext.mathjax",
 ]
 
 intersphinx_mapping = {
