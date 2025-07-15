@@ -61,33 +61,21 @@ class Simulator:
 
     .. math::
 
-            d' = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
+        d' = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
 
-        where :math:`\\sigma` = ``noise_std``, :math:`\\Sigma` = ``ch_cov`` (channel covariance),
-        and :math:`v` = channel pattern (unit vector across channels).
-
-        Thus the injected β-weights satisfy a Mahalanobis distance of d'
-        between condition centroids, yielding theoretical decoding
-        accuracy ≈ :math:`\\Phi(d'/2)`. Do not use if you specify effects_amp directly.
-        Default is 0.5.
-
-    .. math::
-
-        d' \;=\; \frac{a}{\sigma}\,\sqrt{v^{\mathsf T}\,\Sigma^{-1}\,v}
+    where :math:`\\sigma` = ``noise_std``, :math:`\\Sigma` = ``ch_cov`` (channel covariance),
+    and :math:`v` = channel pattern (unit vector across channels).
 
     We draw *v* from a standard normal and **normalise it to unit Mahalanobis
-    norm** (‖*v*‖_{Σ^{-1}} = 1).  Therefore the distance simplifies to
+    norm** (:math:`‖v‖_{Σ^{-1}} = 1`).  Therefore the distance simplifies to
 
     .. math::
-        d' = \frac{a}{\sigma}
+        d' = \\frac{a}{\sigma}
 
     so the amplitude we must inject is
 
     .. math::
-        a = d'\,\sigma / \sqrt{\operatorname{tr}(\Sigma^{-1})}
-
-    (because for unit-Mahalanobis vectors the expected Euclidean norm in
-    channel space is :math:`\sqrt{\operatorname{tr}(\Sigma^{-1})}`).
+        a = d'\\sigma
 
     If the user supplies ``effect_amp`` directly, that value is taken instead
     and the conversion above is skipped.
@@ -227,7 +215,7 @@ class Simulator:
             effect_val.append({
                 "col_idx": col_idx,
                 "windows": windows,
-                "base_amp": amp,
+                "base_amp": amp
             })
         return effect_val
     
@@ -243,7 +231,7 @@ class Simulator:
             # generate random pattern
             v = self.rng.standard_normal(self.n_channels)
             # Normalize it to 1 Mahalanobis distance:
-            v /= np.sqrt(v @ np.linalg.pinv(self.ch_cov) @ v)        # unit Mahalanobis norm
+            v /= np.sqrt(v @ np.linalg.pinv(self.ch_cov) @ v)  # unit Mahalanobis norm
 
             # build time resolved activation time course
             act = np.zeros(self.n_samples, float)
