@@ -70,7 +70,6 @@ MultiSim addresses this gap by letting investigators simulate time-resolved mult
 
 This toolbox promotes best-practice MVPA by giving researchers a tailored benchmark for their specific experimental designs, a testbed for developing new decoding methods, and a principled way to check that planned studies are properly powered—ultimately enabling more reliable and efficient investigations of brain function.
 
-
 # Code Quality and Documentation
 SimMEG is hosted on GitHub. Examples and API documentation are available on the platform [here](https://alexlepauvre.github.io/meeg_simulator/). We provide installation guides, algorithm introductions, and examples of using the package with [Jupyter Notebook](https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html). We further provide the full mathetmatical details of our simulation [here](https://alexlepauvre.github.io/meeg_simulator/tutorial/06-mathematical_details.html). The package is available on Linux, macOS and Windows for Python >=3.12
 It can be installed with pip install simMEG. To ensure high code quality, all implementations adhere to the PEP8 code style [REF], enforced by ruff [REF], the code formatter black and the static analyzer prospector. The documentation is provided through docstrings using the NumPy conventions and build using Sphinx. 
@@ -82,54 +81,3 @@ It can be installed with pip install simMEG. To ensure high code quality, all im
 
 # Supplementary
 
-## Effect size formulation
-
-Effect sizes are simulated based on the Mahalanobis distance {cite}`mclachlan1999mahalanobis;mahalanobis1930tests`, which is a multivariate generalization of the standard z-score, taking into account the covariance structure of the data. For two classes, the Mahalanobis distance is defined as:
-
-$$\Delta =  \sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}$$
-
-where $\mu_{1}$ and $\mu_{2}$ are the centroids of each condition, $\Sigma$ is the covariance matrix and $T$ denotes matrix transpose. In our specific case, as the additive noise is multiplied by the covariance matrix to generate the final data, the effect size is equal to:
-
-$$\Delta =  \sqrt{(\mu_{1} - \mu_{2})^{T}(\sigma^{2}\Sigma)^{-1}(\mu_{1} - \mu_{2})}$$
-
-Which simplifies to:
-
-$$\Delta =  \frac{1}{\sigma}\sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}$$
-
-To simulate data with the require effect size $\Delta$, we generate a random vector $\tilde v$ by drawing a random number from a standard normal distribution for each channel (which are used as the $\Beta$ of our generative GLM). We then normalize that vector to have a Mahalanobis length of 1:
-
-$$ v = \frac{\tilde v}{\sqrt{(\tilde v)^{T}\Sigma^{-1}(\tilde v)}}$$
-
-The unit vector can be scaled by a constant $a$, such that when the centroids of each conditions are placed on each side of itm the distance between them matches the desired Mahalanobis distance:
-
-$$\Delta =  \frac{1}{\sigma} \sqrt{av^{T}\Sigma^{-1}av}$$
-
-Which simplifies to:
-
-$$\Delta =  \frac{a}{\sigma} \sqrt{v^{T}\Sigma^{-1}v}$$
-
-Where $v$ is a random vector of Mahalanobis length of 1 (i.e. Mahalanobis unit length vector) and $a$ is a constant to scale the effect up or down to achieve the desired effect size. As $v$ is of unit length, the term $\sqrt{v^{T}\Sigma^{-1}v}$ is equal to 1 and the equation simplifies to:
-
-$$\Delta =  \frac{a}{\sigma}$$
-
-To generate a multivariate pattern of the desired effect size, we have to resolve $a$ for $||av||_{\Sigma^{-1}}$ and $sigma$, which gives:
-
-$$a = \Delta * \sigma$$
-
-where: 
-- $\Delta =$``effect_size``
-- $\sigma$=``noise_std``
-
-By multplying our vector $v$ by the constant $a$, we ensure that the distance between the two classes matches the desired effect size.
-
-### Effect size and decoding accuracy
-
-With equal class covariances, a Bayes-optimal linear classifier achieves:
-
-$$\Phi(-\frac{1}{2}d')$$
-
-Where $\Phi$ is the normal distribution cummulative distribution function {cite}`mclachlan1999mahalanobis;mclachlan2005discriminant`. Accordingly, the maximal theoretical decoding accuracy is equal to:
-
-$$1 - \Phi(-\frac{1}{2}d')$$
-
-Thus an effect size of $d'=0.5$ implies a theoretical ceiling of ≈ 69 % accuracy, $d'=1$ gives ≈ 84 %, and so on.  By scaling the injected pattern according to the formula above, **multisim** ensures that simulated data respect this relationship irrespective of the number of channels or their covariance.
