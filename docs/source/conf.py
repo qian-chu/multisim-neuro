@@ -47,7 +47,7 @@ pygments_style = "sphinx"
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 
-bibtex_bibfiles = ['../paper/paper.bib']
+bibtex_bibfiles = ['../../paper/paper.bib']
 
 
 # -- Options for HTML output -------------------------------------------------
