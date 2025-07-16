@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 import os
-from typing import List, Dict, Tuple, Optional, Sequence
+from typing import List, Dict, Optional, Sequence
 
 
 class Simulator:
     """
     Simulate epoched MEG/EEG data with multivariate patterns.
 
-    This generator follows the general spirit of Friston & Zeidman’s
+    This generator follows the general spirit of Friston & Zeidman's
     **SPM `DEMO_CVA_RSA.m`** but adds *time-resolved* effects so that each
     experimental manipulation can switch on/off within an epoch.
 
@@ -24,7 +24,7 @@ class Simulator:
         ================ ================================
         ``condition``    Column name in *X*.
         ``windows``      List of ``(start, end)`` time pairs (seconds).
-        ``effect_size``  Mahalanobis distance (*d′*).
+        ``effect_size``  Mahalanobis distance (*d'*).
         ``effect_amp``   Amplitude of β-weights directly.
         ================ ================================
 
@@ -72,11 +72,12 @@ class Simulator:
 
     .. math::
 
-        d' = \\frac{a}{\sigma}
+        d' = \\frac{a}{\\sigma}
 
     so the amplitude we must inject is
 
     .. math::
+
         a = d'\\sigma
 
     If the user supplies ``effect_amp`` directly, that value is taken instead
@@ -143,7 +144,7 @@ class Simulator:
         # 2. Number of samples per epoch:
         self.n_samples = int(round((self.tmax - self.tmin) * self.sfreq)) - 1
         if self.n_samples <= 0:
-            raise ValueError("Derived n_samples must be > 0.  Check tmin/tmax/sfreq.")
+            raise ValueError("Derived n_samples must be > 0. Check tmin/tmax/sfreq.")
 
         # 3. Specify channel covariance
         if ch_cov is None:
@@ -252,8 +253,9 @@ class Simulator:
             B3d[:, eff["col_idx"], :] += act[:, None] * v
 
         # flatten to (condition*time, channels) with correct ordering
-        B = np.transpose(B3d, (1, 0, 2)).reshape(self.n_exp_conditions * self.n_samples, 
-                                                 self.n_channels)
+        B = np.transpose(B3d, (1, 0, 2)).reshape(
+            self.n_exp_conditions * self.n_samples, self.n_channels
+            )
         B = B @ self.ch_cov  # apply Σ once
         # Generate subject data by multiplying design matrix with betas:
         sub_data = self._X_full @ B
@@ -367,8 +369,8 @@ class Simulator:
             raise ImportError(
                 "MNE-Python could not be imported. Use the following installation method "
                 "appropriate for your environment:\n\n"
-                f"    pip install mne\n"
-                f"    conda install -c conda-forge mne"
+                "    pip install mne\n"
+                "    conda install -c conda-forge mne"
             )
         # Create events:
         events, event_id = self.generate_events(X, mapping)
