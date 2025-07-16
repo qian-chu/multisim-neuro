@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -43,14 +43,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/multisim_kernel';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/02-multisim_kernel';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Simulating multivariate effects with intersubject variability" href="multisim_intersubject_noise.html" />
-    <link rel="prev" title="Basic usage" href="multisim_basic.html" />
+    <link rel="next" title="Simulating multivariate effects with intersubject variability" href="03-multisim_intersubject_noise.html" />
+    <link rel="prev" title="Basic usage" href="01-multisim_basic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -242,10 +240,12 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="multisim_basic.html">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-multisim_basic.html">Basic usage</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Simulating multivariate effects based on temporal kernel</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multisim_intersubject_noise.html">Simulating multivariate effects with intersubject variability</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multisim_effect_size.html">Specifying Multivariate Effect Size</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-multisim_intersubject_noise.html">Simulating multivariate effects with intersubject variability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-multisim_cross_temporal_generalization.html">Cross temporal generalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-multisim_effect_size.html">Specifying Multivariate Effect Size</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-mathematical_details.html">Mathematical details</a></li>
 </ul>
 </div>
 </nav></div>
@@ -306,22 +306,17 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <style>
-/* Hide Notebook Titles from Sidebar */
-.toctree-wrapper > ul { display: none !important; }
-</style><section id="Simulating-multivariate-effects-based-on-temporal-kernel">
-<h1>Simulating multivariate effects based on temporal kernel<a class="headerlink" href="#Simulating-multivariate-effects-based-on-temporal-kernel" title="Link to this heading">#</a></h1>
-<p>In the previous example, we showed how to use the toolbox to specify multivariate effects of contrasts between experimental conditions at precise timepoints. You may have noticed that the generated effects look a bit too abrupt temporally to be realistic. That is because, by default, the toolbox generates multivariate effects with the same amplitude at all time points you specified to be on. In real data however, this is not the case. Typically, you would expect decoding to rise not at once but
-over some time. Similarly, you would not expect the effect to vanish suddenly, but rather to vanish over a period of time.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="simulating-multivariate-effects-based-on-temporal-kernel">
+<h1>Simulating multivariate effects based on temporal kernel<a class="headerlink" href="#simulating-multivariate-effects-based-on-temporal-kernel" title="Link to this heading">#</a></h1>
+<p>In the previous example, we showed how to use the toolbox to specify multivariate effects of contrasts between experimental conditions at precise timepoints. You may have noticed that the generated effects look a bit too abrupt temporally to be realistic. That is because, by default, the toolbox generates multivariate effects with the same amplitude at all time points you specified to be present. In real data however, this is not the case. Typically, you would expect decoding to rise not at once but over some time. Similarly, you would not expect the effect to vanish suddenly, but rather to vanish over a period of time.</p>
 <p>To simulate more realistic temporal dynamics of multivariate effects, you can specify a temporal kernel that will be convolved with the effects you have specified. In this tutorial, we will illustrate how to do so.</p>
-<section id="1.-Setting-up-the-simulation">
-<h2>1. Setting up the simulation<a class="headerlink" href="#1.-Setting-up-the-simulation" title="Link to this heading">#</a></h2>
+<section id="setting-up-the-simulation">
+<h2>1. Setting up the simulation<a class="headerlink" href="#setting-up-the-simulation" title="Link to this heading">#</a></h2>
 <p>Just as in the simulation before, we need to specify a design matrix, the time windows for our effects, as well as the characteristics of our effects (number of channels, number of participants, number of samples per trials…). We will take the same parameters as before.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span> <span class="k">as</span> <span class="n">gamma_dist</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -330,28 +325,20 @@ over some time. Similarly, you would not expect the effect to vanish suddenly, b
 
 <span class="c1"># Add descriptors:</span>
 <span class="n">cond_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;attention&quot;</span><span class="p">]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>  <span class="c1"># Add a column for the interaction between category and attention</span>
 <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;face&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">},</span>
     <span class="s2">&quot;attention&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;attended&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;unattended&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
-<span class="c1"># The &#39;effects&#39; array tells us which columns in X are &#39;active&#39; at each time window.</span>
-<span class="c1"># Here we say effect 0 =&gt; category, effect 1 =&gt; attention</span>
-<span class="n">effects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-
-<span class="c1"># For each effects, define a 2x2 array where each row is [start_ms, end_ms]</span>
-<span class="n">t_win</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="p">[</span><span class="mf">0.100</span><span class="p">,</span> <span class="mf">0.200</span><span class="p">],</span>  <span class="c1"># Condition 0 active window</span>
-        <span class="p">[</span><span class="mf">0.300</span><span class="p">,</span> <span class="mf">0.400</span><span class="p">],</span>  <span class="c1"># Condition 1 active window</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-
-<span class="c1"># Effect size:</span>
-<span class="n">effect_size</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="c1"># Specifying the effects:</span>
+<span class="n">effects</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span> 
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;attention&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+    <span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
 
 <span class="c1"># Data parameters:</span>
-<span class="n">n_channels</span> <span class="o">=</span> <span class="mi">64</span>  <span class="c1"># EEG system with 32 electrodes</span>
+<span class="n">n_channels</span> <span class="o">=</span> <span class="mi">32</span>  <span class="c1"># EEG system with 32 electrodes</span>
 <span class="n">n_subjects</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Recording from 20 subjects</span>
 <span class="n">noise_std</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># Variance of the data</span>
 <span class="n">ch_cov</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Assuming that the data of each sensor are independent</span>
@@ -361,18 +348,16 @@ over some time. Similarly, you would not expect the effect to vanish suddenly, b
 </pre></div>
 </div>
 </div>
-</section>
-<section id="2.-Specifying-the-temporal-kernel">
-<h2>2. Specifying the temporal kernel<a class="headerlink" href="#2.-Specifying-the-temporal-kernel" title="Link to this heading">#</a></h2>
-<p>To specify mutlivariate effects with more realistic temporal dynamics, we need to define a temporal kernel. This kernel will then be convolved with the time window we have specified for each effect, such that the mutlivariate effects follow these temporal dynamics. To illustrate it, we will use a gamma kernel. A gamma function looks like a Gaussian, except it is skewed towards the right, such that the right tail is longer. This captures nicely the typical dynamics of multivariate effect and of
-ERPs, where we typically see a quick rise followed by a slower decay:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate our kernel:</span>
+</section>
+<section id="specifying-the-temporal-kernel">
+<h2>2. Specifying the temporal kernel<a class="headerlink" href="#specifying-the-temporal-kernel" title="Link to this heading">#</a></h2>
+<p>To specify mutlivariate effects with more realistic temporal dynamics, we need to define a temporal kernel. This kernel will then be convolved with the time window we have specified for each effect, such that the mutlivariate effects follow these temporal dynamics. To illustrate it, we will use a gamma kernel. A gamma function looks like a Gaussian, except it is skewed towards the right, capturing nicely the typical dynamics of multivariate effect and of ERPs, where we typically see a quick rise followed by a slower decay:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate our kernel:</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>  <span class="c1"># time vector (in seconds)</span>
-<span class="n">kernel</span> <span class="o">=</span> <span class="n">gamma_dist</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.08</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">gamma_dist</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="c1"># kernel /= kernel.max()  # Normalize peak to 0.25</span>
 
 <span class="c1"># Plot the kernel:</span>
@@ -385,181 +370,75 @@ ERPs, where we typically see a quick rise followed by a slower decay:</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorial_multisim_kernel_4_0.png" src="../_images/tutorial_multisim_kernel_4_0.png" />
+<div class="cell_output docutils container">
+<img alt="../_images/cc7eb3a17663658687cc2afc782ee50de1bdb75c1fb8d5e5b818eb43627693e8.png" src="../_images/cc7eb3a17663658687cc2afc782ee50de1bdb75c1fb8d5e5b818eb43627693e8.png" />
 </div>
 </div>
-<p>You can play around with the shape and scale parameters to obtain different temporal profiles. I chose these parameters as I thought they look reasonable. Note that here, despite the kernel starting at t = 0, when we convolve it with the data, it will start to rise only from the first sample at which we have an effect and ramp up from there. So don’t try to specify a kernel that starts at the time point you’d want to see your effect, this is taken care of above by specifying the time window for
-your effect.</p>
+<p>You can play around with the shape and scale parameters to obtain different temporal profiles. I chose these parameters as I thought they look reasonable. Note that here, despite the kernel starting at t = 0, when we convolve it with the data, it will start to rise only from the first sample at which we have an effect and ramp up from there. So don’t try to specify a kernel that starts at the time point you’d want to see your effect, this is taken care of above by specifying the time window for your effect.</p>
 </section>
-<section id="4.-Simulating-the-data">
-<h2>4. Simulating the data<a class="headerlink" href="#4.-Simulating-the-data" title="Link to this heading">#</a></h2>
+<section id="simulating-the-data">
+<h2>4. Simulating the data<a class="headerlink" href="#simulating-the-data" title="Link to this heading">#</a></h2>
 <p>The simulation of the data is exactly the same as before, except for the additional kernel parameter:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">multisim</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">multisim</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
 
 <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
+    <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
     <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
     <span class="n">n_channels</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
     <span class="n">n_subjects</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
     <span class="n">tmin</span><span class="p">,</span>
     <span class="n">tmax</span><span class="p">,</span>  <span class="c1"># Start and end of epochs</span>
     <span class="n">sfreq</span><span class="p">,</span>  <span class="c1"># Sampling frequency of the data</span>
-    <span class="n">t_win</span><span class="p">,</span>  <span class="c1"># Time window of the effects</span>
-    <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Which effects</span>
     <span class="n">ch_cov</span><span class="o">=</span><span class="n">ch_cov</span><span class="p">,</span>  <span class="c1"># Spatial covariance of the data</span>
-    <span class="n">effect_size</span><span class="o">=</span><span class="n">effect_size</span><span class="p">,</span>  <span class="c1"># Size of the effect</span>
     <span class="n">kern</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>  <span class="c1"># Temporal kernel</span>
 <span class="p">)</span>
-<span class="n">epochs</span> <span class="o">=</span> <span class="n">sims</span><span class="o">.</span><span class="n">export_to_mne</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">cond_names</span><span class="o">=</span><span class="n">cond_names</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="n">sims</span><span class="o">.</span><span class="n">export_to_mne</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-</pre></div></div>
 </div>
 </section>
-<section id="5.-Vizualizing-the-data:">
-<h2>5. Vizualizing the data:<a class="headerlink" href="#5.-Vizualizing-the-data:" title="Link to this heading">#</a></h2>
+<section id="vizualizing-the-data">
+<h2>5. Vizualizing the data:<a class="headerlink" href="#vizualizing-the-data" title="Link to this heading">#</a></h2>
 <p>Just as was the case before, we don’t really see much when looking at the activity of a particular channel as we have added effects at the multivariate level. Our kernel doesn’t change anything at that level.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_image</span><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scalings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mi">1</span><span class="p">));</span>
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_image</span><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">scalings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Not setting metadata
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Not setting metadata
-160 matching events found
-No baseline correction applied
-0 projection items activated
-combining channels using &#34;mean&#34;
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorial_multisim_kernel_9_1.png" src="../_images/tutorial_multisim_kernel_9_1.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>160 matching events found
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[&lt;Figure size 640x480 with 3 Axes&gt;]
-</pre></div></div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>No baseline correction applied
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 projection items activated
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_3166/238737532.py:1: RuntimeWarning: Cannot find channel coordinates in the supplied Evokeds. Not showing channel locations.
+  epochs[0].plot_image(picks=[0], scalings=dict(eeg=1));
+</pre></div>
+</div>
+<img alt="../_images/8a9a7533a507428a4d3b942fc1308196b87b7fccf97ed18f39ffbb6e59d669af.png" src="../_images/8a9a7533a507428a4d3b942fc1308196b87b7fccf97ed18f39ffbb6e59d669af.png" />
+</div>
 </div>
 </section>
-<section id="6.-Decoding-analysis">
-<h2>6. Decoding analysis<a class="headerlink" href="#6.-Decoding-analysis" title="Link to this heading">#</a></h2>
-<section id="6.1.-Within-subject-analysis:">
-<h3>6.1. Within subject analysis:<a class="headerlink" href="#6.1.-Within-subject-analysis:" title="Link to this heading">#</a></h3>
+<section id="decoding-analysis">
+<h2>6. Decoding analysis<a class="headerlink" href="#decoding-analysis" title="Link to this heading">#</a></h2>
+<section id="within-subject-analysis">
+<h3>6.1. Within subject analysis:<a class="headerlink" href="#within-subject-analysis" title="Link to this heading">#</a></h3>
 <p>We can try to decode each of the labels of interest (face vs. objects and attended vs. unattended) for a given subject and we will see that these effects are present at the expected time points, but this time following the dynamics defined by our kernel:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
@@ -576,19 +455,19 @@ combining channels using &#34;mean&#34;
 <span class="n">data</span> <span class="o">=</span> <span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
 
 <span class="c1"># Decode faces vs. objects:</span>
-<span class="n">cate_lbl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">][</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">cate_lbl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">][</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="mi">0</span><span class="p">]])</span>
 <span class="n">scores_category</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
     <span class="n">cross_val_multiscore</span><span class="p">(</span>
-        <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cate_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
+        <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cate_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
     <span class="p">),</span>
     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Decode attended vs. unattended:</span>
-<span class="n">att_lbl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;attention&quot;</span><span class="p">][</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">att_lbl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;attention&quot;</span><span class="p">][</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="n">scores_attention</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
     <span class="n">cross_val_multiscore</span><span class="p">(</span>
-        <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
+        <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
     <span class="p">),</span>
     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
@@ -607,31 +486,20 @@ combining channels using &#34;mean&#34;
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorial_multisim_kernel_11_1.png" src="../_images/tutorial_multisim_kernel_11_1.png" />
+<img alt="../_images/b2bd95e5a04dcebce971bcf5880dd2dd64af61a5a8b3904e169c903a11b3fb43.png" src="../_images/b2bd95e5a04dcebce971bcf5880dd2dd64af61a5a8b3904e169c903a11b3fb43.png" />
 </div>
 </div>
 </section>
-<section id="6.2.-Group-level-analysis">
-<h3>6.2. Group level analysis<a class="headerlink" href="#6.2.-Group-level-analysis" title="Link to this heading">#</a></h3>
+<section id="group-level-analysis">
+<h3>6.2. Group level analysis<a class="headerlink" href="#group-level-analysis" title="Link to this heading">#</a></h3>
 <p>We simulated the data of 20 subjects, so we can investigate the evidence for decoding of the experimental manipulations at the group level. First, we need to perform the decoding on every single subject:</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">permutation_cluster_1samp_test</span><span class="p">,</span> <span class="n">bootstrap_confidence_interval</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">permutation_cluster_1samp_test</span><span class="p">,</span> <span class="n">bootstrap_confidence_interval</span>
 
 <span class="n">scores_category</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">scores_attention</span> <span class="o">=</span> <span class="p">[]</span>
@@ -644,7 +512,7 @@ Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
     <span class="n">scores_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
             <span class="n">cross_val_multiscore</span><span class="p">(</span>
-                <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cate_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
+                <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cate_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
             <span class="p">),</span>
             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
@@ -653,7 +521,7 @@ Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
     <span class="n">scores_attention</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
             <span class="n">cross_val_multiscore</span><span class="p">(</span>
-                <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
+                <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
             <span class="p">),</span>
             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
@@ -664,12 +532,11 @@ Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
 </div>
-<p>We can then apply a cluster based permutation test across subjects to find out when we have an effect:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cluster based permutation test for the category:</span>
+<p>We can then apply a cluster based permutation test across subjects to find out when we have an effect:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cluster based permutation test for the category:</span>
 <span class="n">T_obs</span><span class="p">,</span> <span class="n">clusters</span><span class="p">,</span> <span class="n">cluster_p_values</span><span class="p">,</span> <span class="n">H0</span> <span class="o">=</span> <span class="n">permutation_cluster_1samp_test</span><span class="p">(</span>
     <span class="n">scores_category</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="n">n_permutations</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
@@ -697,46 +564,92 @@ Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Using a threshold of 1.729133
-stat_fun(H1): min=-2.110506706845517 max=4.055641521694572
-Running initial clustering …
-Found 6 clusters
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9f511727eaab4b559059f41efedf256b", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Using a threshold of 1.729133
-stat_fun(H1): min=-1.6883996789639815 max=4.245757513011389
-Running initial clustering …
-Found 8 clusters
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d54a941df10b48fea9a5dbfe4cbef3fc", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<p>Based on the input to the simulation, we would expect to see a significantly above chance decoding of face vs. object from 0.1 to 0.2 s, and then of attention from 0.3 to 0.4s. Let’s check whether that is the case:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using a threshold of 1.729133
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the confidence intervals:</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.0627661581933485 max=15.492023072610934
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running initial clustering …
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 6 clusters
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|          | Permuting : 0/1023 [00:00&lt;?,       ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 19%|█▉        | Permuting : 192/1023 [00:00&lt;00:00, 5578.81it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 38%|███▊      | Permuting : 389/1023 [00:00&lt;00:00, 5599.93it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 58%|█████▊    | Permuting : 589/1023 [00:00&lt;00:00, 5652.13it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 77%|███████▋  | Permuting : 792/1023 [00:00&lt;00:00, 5684.57it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 97%|█████████▋| Permuting : 990/1023 [00:00&lt;00:00, 5665.40it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5603.72it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using a threshold of 1.729133
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.925703995222707 max=13.150422304642927
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running initial clustering …
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 4 clusters
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|          | Permuting : 0/1023 [00:00&lt;?,       ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 19%|█▉        | Permuting : 199/1023 [00:00&lt;00:00, 5853.53it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 39%|███▉      | Permuting : 400/1023 [00:00&lt;00:00, 5836.45it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 59%|█████▊    | Permuting : 600/1023 [00:00&lt;00:00, 5769.00it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 78%|███████▊  | Permuting : 803/1023 [00:00&lt;00:00, 5717.53it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 98%|█████████▊| Permuting : 1001/1023 [00:00&lt;00:00, 5663.70it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5495.22it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5493.85it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Based on the input to the simulation, we would expect to see a significantly above chance decoding of face vs. object from 0.1 to 0.2 s, and then of attention from 0.3 to 0.4s. Let’s check whether that is the case:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the confidence intervals:</span>
 <span class="n">ci_low_cate</span><span class="p">,</span> <span class="n">ci_up_cate</span> <span class="o">=</span> <span class="n">bootstrap_confidence_interval</span><span class="p">(</span><span class="n">scores_category</span><span class="p">)</span>
 <span class="n">ci_low_att</span><span class="p">,</span> <span class="n">ci_up_att</span> <span class="o">=</span> <span class="n">bootstrap_confidence_interval</span><span class="p">(</span><span class="n">scores_attention</span><span class="p">)</span>
 
@@ -770,17 +683,12 @@ Found 8 clusters
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorial_multisim_kernel_17_0.png" src="../_images/tutorial_multisim_kernel_17_0.png" />
+<div class="cell_output docutils container">
+<img alt="../_images/3ee163d28ac9b2d13558cbebe9d36c1210cddc4f1266cfaa056535fa654930fb.png" src="../_images/3ee163d28ac9b2d13558cbebe9d36c1210cddc4f1266cfaa056535fa654930fb.png" />
 </div>
 </div>
-<p>These results align with what we would expect. However, you probably noticed that this time, the effect don’t seem to be restricted to the time points we have specified. That’s to be expected. The gamma kernel are convolved with the time windows of our effects, so the effects gets protruded in time. If you want to avoid this, you should specify your effect as a single point in time (one sample) which when convolved with a temporally extended kernel will become protruded in time. You can then
-play around with the spread of your kernel to control the duration of the effect. So when using a kernel, it is a bit less straight forward to specify clear time points for your effects.</p>
-<p>One additional thing you may have noticed is that the amplitude of the effect seem to be larger than before. That also is to be expected. Our gamma kernel has a max value of 1, but since we are convoluting it with the effect of a set amplitude, we are essentially summing up the amplitude of neighboring time points. So here again, you’d need to adjust your gamma kernel max amplitude if you want to make sure you stay below a certain decoding accuracy threshold. Alternatively, you can modify the
-amplitude parameter of the simulator, or you can play with both options. You can either guesstimate by trying various factors for your kernel or find an analytical solution</p>
+<p>These results align with what we would expect. However, you probably noticed that this time, the effect don’t seem to be restricted to the time points we have specified. That’s to be expected. The gamma kernel are convolved with the time windows of our effects, so the effects gets protruded in time. If you want to avoid this, you should specify your effect as a single point in time (one sample) which when convolved with a temporally extended kernel will become protruded in time. You can then play around with the spread of your kernel to control the duration of the effect. So when using a kernel, it is a bit less straight forward to specify clear time points for your effects.</p>
+<p>In the next tutorial, we will show how to specify between subject noise, to make the data even more realistic.</p>
 </section>
 </section>
 </section>
@@ -796,7 +704,7 @@ amplitude parameter of the simulator, or you can play with both options. You can
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="multisim_basic.html"
+       href="01-multisim_basic.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
@@ -805,7 +713,7 @@ amplitude parameter of the simulator, or you can play with both options. You can
       </div>
     </a>
     <a class="right-next"
-       href="multisim_intersubject_noise.html"
+       href="03-multisim_intersubject_noise.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
@@ -832,13 +740,13 @@ amplitude parameter of the simulator, or you can play with both options. You can
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Setting-up-the-simulation">1. Setting up the simulation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Specifying-the-temporal-kernel">2. Specifying the temporal kernel</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Simulating-the-data">4. Simulating the data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#5.-Vizualizing-the-data:">5. Vizualizing the data:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#6.-Decoding-analysis">6. Decoding analysis</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#6.1.-Within-subject-analysis:">6.1. Within subject analysis:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#6.2.-Group-level-analysis">6.2. Group level analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-simulation">1. Setting up the simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-the-temporal-kernel">2. Specifying the temporal kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-the-data">4. Simulating the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vizualizing-the-data">5. Vizualizing the data:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decoding-analysis">6. Decoding analysis</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#within-subject-analysis">6.1. Within subject analysis:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#group-level-analysis">6.2. Group level analysis</a></li>
 </ul>
 </li>
 </ul>
@@ -848,7 +756,7 @@ amplitude parameter of the simulator, or you can play with both options. You can
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/tutorial/multisim_kernel.ipynb.txt"
+      <li><a href="../_sources/tutorial/02-multisim_kernel.ipynb.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>
