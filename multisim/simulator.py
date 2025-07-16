@@ -70,6 +70,7 @@ class Simulator:
     norm** (:math:`‖v‖_{Σ^{-1}} = 1`).  Therefore the distance simplifies to
 
     .. math::
+    
         d' = \\frac{a}{\sigma}
 
     so the amplitude we must inject is
