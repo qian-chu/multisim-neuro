@@ -31,6 +31,9 @@ extensions = [
     "sphinx.ext.mathjax",
 ]
 
+nb_execution_timeout = 10000
+
+
 myst_enable_extensions = [
     "dollarmath",
     "amsmath",
