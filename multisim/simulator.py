@@ -19,15 +19,16 @@ class Simulator:
     effects : list[dict]
         Each dict describes **one multivariate pattern**.  Required keys
 
-        ============= ==========================================================
-        Key           Meaning
-        ------------- ----------------------------------------------------------
-        ``condition`` Column name in *X*
-        ``windows``   List of ``(start, end)`` time pairs *(seconds)*
-        ``effect_size`` or ``effect_amp``
-                       *effect_size* = Mahalanobis distance * d′*  
-                       *effect_amp*  = amplitude of β-weights directly
-        ============= ==========================================================
+        ================ ================================
+        Key              Meaning
+        ================ ================================
+        ``condition``    Column name in *X*.
+        ``windows``      List of ``(start, end)`` time pairs (seconds).
+        ``effect_size``  Mahalanobis distance (*d′*).
+        ``effect_amp``   Amplitude of β-weights directly.
+        ================ ================================
+
+        Specify either effect_size or effect_amp, not both.
 
         *One dict → one pattern.*  To share a pattern across several windows,
         list them in a single dict.  To have different patterns, provide
@@ -70,7 +71,7 @@ class Simulator:
     norm** (:math:`‖v‖_{Σ^{-1}} = 1`).  Therefore the distance simplifies to
 
     .. math::
-    
+
         d' = \\frac{a}{\sigma}
 
     so the amplitude we must inject is
