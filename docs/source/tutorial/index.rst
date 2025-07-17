@@ -14,4 +14,5 @@ Here you can find tutorials on how to use the meg simulator
    04-multisim_cross_temporal_generalization
    05-multisim_effect_size
    06-mathematical_details
+   07-under_the_hood
 
