@@ -26,11 +26,23 @@ extensions = [
     "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
+    "myst_nb",
+    "sphinxcontrib.bibtex",
+    "sphinx.ext.mathjax",
+]
+
+nb_execution_timeout = 10000
+
+
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
 ]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "mne": ("https://mne.tools/stable/", None),
 }
 
@@ -44,6 +56,8 @@ pygments_style = "sphinx"
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]
+
+bibtex_bibfiles = ['../../paper/paper.bib']
 
 
 # -- Options for HTML output -------------------------------------------------
