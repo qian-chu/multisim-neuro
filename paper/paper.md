@@ -94,7 +94,7 @@ sim.summary()  # Should return 20 subjects
 
 This toolbox promotes best-practice MVPA by giving researchers a tailored benchmark for their specific experimental designs, a testbed for developing new decoding methods, and a principled way to check that planned studies are properly powered—ultimately enabling more reliable and efficient investigations of brain function.
 
-```{figure} ./figure1.png
+```{figure} ./multisim/figure1.png
 label: figure-1
 
 Figure 1. Overview of the simulation and decoding framework
