@@ -335,5 +335,5 @@ plt.figure(1).text(0.2725, 0.4516, 'a.u.', transform=plt.figure(1).transFigure, 
 plt.figure(1).text(0.6664, 0.4483, 'AUC', transform=plt.figure(1).transFigure, fontsize=12.)  # id=plt.figure(1).texts[9].new
 #% end: automatic generated code from pylustrator
 
-plt.savefig('./paper/figure.png')
+plt.savefig('./paper/figure1.png')
 plt.close()
