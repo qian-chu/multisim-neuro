@@ -275,7 +275,7 @@ class Simulator:
             self.n_epochs, self.n_samples, self.n_channels
         ).transpose(0, 2, 1)
 
-    def summary(self) -> str:
+    def __repr__(self) -> str:
         """Textual summary of the simulated dataset."""
         return (
             f"Subjects  : {len(self.data)}\n"
