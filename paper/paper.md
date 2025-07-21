@@ -69,9 +69,40 @@ Below, we describe the rationale (Statement of needs), and the data-generation m
 
 Multivariate pattern analysis (MVPA) is now routine in cognitive neuroscience for probing how the brain represents information [@ritchie2019decoding;@haynes2006decoding;@kriegeskorte2008representational;@haxby2001distributed;@poldrack2009decoding]. Applied to high-temporal-resolution electrophysiology signals such as electro and magneto-encephalography (EEG and MEG respectively), decoding techniques reveal the millisecond-by-millisecond unfolding of mental representations [@cichy2014resolving;@king2014characterizing;@king2016brain;@cogitate2025adversarial;@kok2017prior]. Strikingly, despite the ubiquity of MVPA techniques, to our knowledge, no method exists to test the sensitivity and specificity of decoding analysis pipelines, nor to estimate, before data collection, how many trials and how many participants are required to detect an effect of a given size.
 
-MultiSim addresses this gap by letting investigators simulate time-resolved multi-channel signals with parameters matching that of their recording setups, and specify multivariate effects with known timing, spatialization and strength, while controlling channel covariance, sensory noise and between subjects variability. Our algorithm produces multi-subject data sets in which ground truth effects are known. By running their pipeline on these data, researchers obtain a direct read-out of its true-positive rate (can it recover the injected effects?) and false-positive rate (does it raise alarms when nothing is present). In addition, our simulator can be used to perform computational power analysis, to determine the number of trials and subjects, by iterating over these parameters.
+MultiSim addresses this gap by letting investigators simulate time-resolved multi-channel signals with paramaters matching that of their recording setups, and specify multivariate effects with known timing, spatialization and strength, while controlling channel covariance, sensory noise and between subjects variability (see @minimal_example for a minimal working example and @figure-1 for a visuallization of the pipeline). Our algorithm produces multi-subject data sets in which ground truth effects are known. By running their pipeline on these data, researchers obtain a direct read-out of its true-positive rate (can it recover the injected effects?) and false-positive rate (does it raise alarms when nothing is present). In addition, our simulator can be used to perform computational power analysis, to determine the number of trials and subjects, by iterating over these parameters.
+
+```{code} python
+:label: minimal_example
+:caption: Creating a TensorMesh using SimPEG
+import numpy as np
+from meeg_simulator import simulate_data
+X = pd.DataFrame(np.random.randn(100, 1), columns=["face-object"]) # 100 trials, 1 experimental condition
+t_win = np.array([[0.2, 0.5]])  # Effect between 200-500 ms
+effects = [
+    {"condition": 'face-object',
+      "windows": [0.1, 0.3],
+      "effect_size": 0.5
+    }
+]
+sims = Simulator(
+   X, noise_std=0.1, n_channels=64, n_subjects=20,
+   tmin=-0.2, tmax=0.8, sfreq=250,
+   t_win=t_win, effects=effects
+  )
+sim.summary()  # Should return 20 subjects
+```
 
 This toolbox promotes best-practice MVPA by giving researchers a tailored benchmark for their specific experimental designs, a testbed for developing new decoding methods, and a principled way to check that planned studies are properly powered—ultimately enabling more reliable and efficient investigations of brain function.
+
+```{figure} ./figure1.png
+label: figure-1
+
+Figure 1. Overview of the simulation and decoding framework
+**A**. General data parameters for the simulation. Left: `n_channels`  corresponds to the number of channels in the montage, with 2 experimental conditions. Middle: `X` is the design matrix (each column is an experimental condition and each row a trial). Right:  `ch_cov` is the channel by channel covariance matrix of the data to be simulated. 
+**B**. Minimal simulation example with effects for each experimental condition with large effect size. Left: `effects` is a dictionary that specifies the `"condition"`, time window (`"windows"`) and effect size (`"effect_size"`) of each effect to simulate. The example specifies an effect of category from 0.1 and 0.2 s with an effect size of 4, and an effect of the attention condition from 0.4 to 0.5 with an effect size of 4. Middle: example of the activation of a single channel. Right: resulting decoding accuracy (using a Support vector machine classifier).
+*C*. Example of simulated effects with a an added gamma kernel to simulate effects with biologically plausible temporal dynamcs. Left: `effects` similar to that of B but with effect size of 0.5 for each condition. Middle: gamma `kernel`, specifying the temporal dynamics of the multivariate effect. Right: Resulting decoding accuracy. 
+**D**. example of simulated data with cross temporal generalization of the category effect. Left: `effects` dictionary specifies two different time windows for the effect of category as a list. Middle: resulting decoding accuracy. Right: Temporal generalization of the decoding. 
+```
 
 # Code Quality and Documentation
 
@@ -81,5 +112,7 @@ It can be installed with pip install simMEG. To ensure high code quality, all im
 # Acknowledgements
 
 # References
+```{bibliography}
+```
 
 # Supplementary
