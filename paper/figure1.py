@@ -193,6 +193,7 @@ im = ax[1, 1].imshow(data[np.argsort(epochs_strong[0].events[:, 2]), :], aspect=
                      origin='lower', cmap='RdBu_r')
 ax[1, 1].set_ylabel('Trials')
 ax[1, 1].set_xlabel('Time (s)')
+ax[1, 1].set_title('Activation')
 ax[1, 1].set_yticks([])
 
 # 3.2.3. Right: Plot time resolved decoding:
@@ -206,9 +207,10 @@ ax[1, 2].plot(epochs_strong[0].times, np.mean(scores_strong['attended vs. unatte
 ax[1, 2].fill_between(epochs_strong[0].times, ci_low_att, ci_up_att, alpha=0.3, color="g")
 ax[1, 2].axhline(0.5, color="k", linestyle="--", label="chance")
 ax[1, 2].set_xlim([epochs_strong[0].times[0], epochs_strong[0].times[-1]])
-ax[1, 2].set_xlabel("Times")
+ax[1, 2].set_xlabel("Time (s)")
 ax[1, 2].set_ylabel("AUC")
 ax[1, 2].legend()
+ax[1, 1].set_title('Decoding')
 
 # ====================================================
 # 3.3. 3rd row (kernel example):
@@ -243,8 +245,9 @@ ax[2, 2].plot(epochs_kernel[0].times, np.mean(scores_kernel['attended vs. unatte
 ax[2, 2].fill_between(epochs_kernel[0].times, ci_low_att, ci_up_att, alpha=0.3, color="g")
 ax[2, 2].axhline(0.5, color="k", linestyle="--", label="chance")
 ax[2, 2].set_xlim([epochs_kernel[0].times[0], epochs_kernel[0].times[-1]])
-ax[2, 2].set_xlabel("Times")
+ax[2, 2].set_xlabel("Time (s)")
 ax[2, 2].set_ylabel("AUC")
+ax[2, 2].set_title('Decoding')
 
 # ====================================================
 # 3.4. 4th row (temporal generalization):
@@ -270,6 +273,7 @@ ax[3, 1].axhline(0.5, color="k", linestyle="--", label="chance")
 ax[3, 1].set_xlim([epochs_temp_gen[0].times[0], epochs_temp_gen[0].times[-1]])
 ax[3, 1].set_xlabel("Times")
 ax[3, 1].set_ylabel("AUC")
+ax[3, 1].set_title("Decoding")
 # 3.2.3. Middle: Plot temporal generalization
 im = ax[3, 2].imshow(np.mean(scores_temp_gen['face vs. object'], axis=0), cmap="RdBu_r", 
                origin="lower", extent=epochs_temp_gen[0].times[[0, -1, 0, -1]])
@@ -280,6 +284,7 @@ ax[3, 2].set_xlabel(
     'Condition: Testing Time (s)',
 )
 ax[3, 2].set_ylabel('Condition: Training Time (s)')
+ax[3, 2].set_title('Temporal generalization')
 fig.colorbar(im, ax=ax[3, 2], label="Performance (ROC AUC)")
 
 plt.tight_layout()

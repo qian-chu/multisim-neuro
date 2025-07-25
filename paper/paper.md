@@ -54,22 +54,21 @@ header-includes:
 ---
 
 # Summary
-
-In MEG/EEG research, validating analysis pipelines is hampered by the lack of ground-truth neural signals in real data. SimMEG fills this gap by generating realistic, time-locked multivariate effects of known magnitude that you can inject into simulated sensor data. You can then run any pipeline—e.g. decoding, sensor-level statistics, or source estimation—against these datasets to benchmark sensitivity and specificity.
-
-Key benefits include:
-
-- Testing whether your pipeline reliably detects effects of a chosen size.  
-- Providing demonstrable, reproducible benchmarks for reviewers or collaborators.  
-- Offering a controlled teaching environment for newcomers.  
+MultiSim is a python package to simulate multivariate patterns in multi-channels time-resolved signals to emulate neural recordings signals (local field potentials, electro and magneto-encephalogram) based on custom experimental design and recording systems. Users can specify the time windows, temporal dynamics and size of the multivariate effects from their design they wish to simulate. The simulated data contain ground truth effects and can therefore be used to develop and benchmark multivariate analysis pipelines to establish their sensitivity and specifity. In addition, the toolbox can be used to perform power analysis, by varying the number of subjects and number of trials per subjects at fixed effect size and noise parameters to identify the optimal combination to ensure that their sample is properly powered. 
 
 Below, we describe the rationale (Statement of needs), and the data-generation method (Methods), a hands-on example (Results), and potential extensions (Discussion).  
 
 # Statement of needs
 
-Multivariate pattern analysis (MVPA) is now routine in cognitive neuroscience for probing how the brain represents information [@ritchie2019decoding;@haynes2006decoding;@kriegeskorte2008representational;@haxby2001distributed;@poldrack2009decoding]. Applied to high-temporal-resolution electrophysiology signals such as electro and magneto-encephalography (EEG and MEG respectively), decoding techniques reveal the millisecond-by-millisecond unfolding of mental representations [@cichy2014resolving;@king2014characterizing;@king2016brain;@cogitate2025adversarial;@kok2017prior]. Strikingly, despite the ubiquity of MVPA techniques, to our knowledge, no method exists to test the sensitivity and specificity of decoding analysis pipelines, nor to estimate, before data collection, how many trials and how many participants are required to detect an effect of a given size.
+Multivariate pattern analysis (MVPA) is now routine in cognitive neuroscience for probing how the brain represents information [@ritchie2019decoding;@haynes2006decoding;@kriegeskorte2008representational;@haxby2001distributed;@poldrack2009decoding]. Applied to high-temporal-resolution electrophysiology signals such as electro and magneto-encephalography (EEG and MEG respectively), decoding techniques reveal the millisecond-by-millisecond unfolding of mental representations [@cichy2014resolving;@king2014characterizing;@king2016brain;@cogitate2025adversarial;@kok2017prior]. 
 
-MultiSim addresses this gap by letting investigators simulate time-resolved multi-channel signals with paramaters matching that of their recording setups, and specify multivariate effects with known timing, spatialization and strength, while controlling channel covariance, sensory noise and between subjects variability. The code block below provides a minimal example, highlighting the simplicity with which multivariate effects can be specified with our toolbox (see \autoref{fig:pipeline}**A** for a visual representation of key parameters):
+While several toolboxes can simulate EEG/MEG data—such as MNE-Python [@gramfort2013meg], FieldTrip [@oostenveld2011fieldtrip], Brainstorm [@tadel2011brainstorm] and unfoldSim [@schepers2025unfoldsim]—these are typically designed to model univariate ERP components, source-level activity, or general sensor-level signals. Critically, none allows researchers to specify multivariate effects with controlled timing, spatial structure, and strength, nor to systematically manipulate noise, channel covariance, and between-subject variability. As a result, there is currently no standard method to test the sensitivity and specificity of decoding pipelines, or to estimate, in advance, the number of trials and participants required to detect effects of a given size.
+
+MultiSim addresses this gap by letting investigators simulate time-resolved multi-channel signals tailored to their recording setups, embedding multivariate effects with known spatiotemporal properties while flexibly controlling signal and noise parameters. The core of our simulation engine builds on and extends a function from the SPM toolbox [see DEMO_CVA_RSA.m, @tierney2025spm], which we adapted to support dynamic time-resolved signals and to give users direct control over effect size specification.
+
+# Functionalities:
+
+The code block below provides a minimal example, highlighting the simplicity with which multivariate effects can be specified with our toolbox (see \autoref{fig:pipeline}**A** for a visual representation of key parameters):
 
 ```python
 import numpy as np
