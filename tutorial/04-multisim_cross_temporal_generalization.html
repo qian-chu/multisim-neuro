@@ -353,7 +353,7 @@
 <span class="c1"># Generate our kernel:</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>  <span class="c1"># time vector (in seconds)</span>
 <span class="n">kernel</span> <span class="o">=</span> <span class="n">gamma_dist</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="n">t</span><span class="o">&lt;</span><span class="mf">0.2</span><span class="p">]</span>
-<span class="n">kernel</span> <span class="o">/=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># Normalize peak to 0.25</span>
+<span class="n">kernel</span> <span class="o">/=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1"># Normalize to peak</span>
 
 <span class="c1"># Between subject noise:</span>
 <span class="n">intersub_noise_std</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">8</span>
@@ -430,7 +430,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/873e547ca56383d1dc7666f710ace8dbd9e1e76fe94cc8692c9b108358cfb6fc.png" src="../_images/873e547ca56383d1dc7666f710ace8dbd9e1e76fe94cc8692c9b108358cfb6fc.png" />
+<img alt="../_images/c4e3aa7846b2328b252208d5766a70c3b06999ba14737b569abdea3ee4192725.png" src="../_images/c4e3aa7846b2328b252208d5766a70c3b06999ba14737b569abdea3ee4192725.png" />
 </div>
 </div>
 <p>As we can clearly see, we have decoding that generalize across all time points within the specified window.</p>
@@ -514,7 +514,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7588b0a3c6c83088d5584ebf853e2cf09d611911efd57a89ba2c295efc1808ab.png" src="../_images/7588b0a3c6c83088d5584ebf853e2cf09d611911efd57a89ba2c295efc1808ab.png" />
+<img alt="../_images/94556b6a02c381156d27a89a0092be4b8c50c7d28f4705b11a5617c59b0ad9c1.png" src="../_images/94556b6a02c381156d27a89a0092be4b8c50c7d28f4705b11a5617c59b0ad9c1.png" />
 </div>
 </div>
 <p>This is the kind of effect you would expect if there is a reinstantiation of the same activation pattern encoding specific information at two different time points, such as when you have memory reinstantiation after a delay period or something like that.</p>
@@ -591,7 +591,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/474b68082d2d320deca4a5ee8b3c749e0c982a7c8a087bdf0003d2cd2708bf8e.png" src="../_images/474b68082d2d320deca4a5ee8b3c749e0c982a7c8a087bdf0003d2cd2708bf8e.png" />
+<img alt="../_images/a7472fdae10eb82561e784721ca371e73248254b89be78672890e6aeaac8c26b.png" src="../_images/a7472fdae10eb82561e784721ca371e73248254b89be78672890e6aeaac8c26b.png" />
 </div>
 </div>
 </section>
@@ -667,7 +667,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/257b04de2af7ba50346cb1602428ee096f1711fa4f919913bb84f86ff5a71e8f.png" src="../_images/257b04de2af7ba50346cb1602428ee096f1711fa4f919913bb84f86ff5a71e8f.png" />
+<img alt="../_images/f2a3c032e156ba810813a2a8b6b8329a9c49a193510019b336200c0e1ae0b657.png" src="../_images/f2a3c032e156ba810813a2a8b6b8329a9c49a193510019b336200c0e1ae0b657.png" />
 </div>
 </div>
 <p>In the next tutorial, we will explore the effect size parameter to show how to use it to investigate the relationship between effect size and decoding accuracy and show the impact of trial number, noise and number of features.</p>
