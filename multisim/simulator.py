@@ -93,21 +93,20 @@ class Simulator:
     Simulating a simple dataset with 20 subjects and a single experimental effect:
 
     >>> import numpy as np
+    >>> import pandas as pd
     >>> from multisim import Simulator
-    >>> X = pd.DataFrame(np.random.randn(100, 1), columns=["category"]) # 100 trials, 1 experimental condition
-    >>> t_win = np.array([[0.2, 0.5]])  # Effect between 200-500 ms
+    >>> X = pd.DataFrame(np.random.randn(100, 1), columns=["category"]) # 100 trials, 1 condition
     >>> effects = [
-        {"condition": 'category',
+        {"condition": "category",
          "windows": [0.1, 0.3],
          "effect_size": 0.5
         }
     ]
     >>> sims = Simulator(
-    ...   X, noise_std=0.1, n_channels=64, n_subjects=20,
+    ...   X, effects, noise_std=0.1, n_channels=64, n_subjects=20,
     ...   tmin=-0.2, tmax=0.8, sfreq=250,
-    ...   t_win=t_win, effects=effects
     ...   )
-    >>> sim.summary()  # Should return 20 subjects
+    >>> sims.summary()  # Should return 20 subjects
     """
 
     def __init__(
@@ -275,7 +274,7 @@ class Simulator:
             self.n_epochs, self.n_samples, self.n_channels
         ).transpose(0, 2, 1)
 
-    def summary(self) -> str:
+    def __repr__(self) -> str:
         """Textual summary of the simulated dataset."""
         return (
             f"Subjects  : {len(self.data)}\n"
