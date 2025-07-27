@@ -100,9 +100,10 @@ In conclusion, MultiSim promotes best practices in MVPA by giving researchers a 
 
 MultiSim is hosted on GitHub. Examples and API documentation are available on the platform [here](https://alexlepauvre.github.io/meeg_simulator/). We provide installation guides, algorithm introductions, and examples of using the package with [Jupyter Notebook](https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html). We further provide the full mathematical details of our simulation [here](https://alexlepauvre.github.io/meeg_simulator/tutorial/06-mathematical_details.html). The package is available on Linux, macOS, and Windows for Python >=3.10.
 
-MultiSim can be installed with `pip install multisim`. To ensure high code quality, all implementations adhere to the PEP8 code style [REF], enforced by ruff [REF], the code formatter black and the static analyzer prospector. The documentation is provided through docstrings using the NumPy conventions and built using Sphinx.
+MultiSim can be installed with `pip install multisim`. 
 
 # Acknowledgements
+This work was supported by the Templeton World Charity Foundation (TWCF0389) and the Max Planck Society. The opinions expressed in this publication are those of the authors and do not necessarily reflect the views of TWCF. We want to thank Zefan Zheng for his feedback on the manuscript and code.
 
 # References
 ```{bibliography}
