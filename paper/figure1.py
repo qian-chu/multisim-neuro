@@ -71,6 +71,9 @@ effects_medium = [
 effects_temp_gen = [
     {"condition": 'category',
         "windows": [[0.1, 0.2], [0.6, 0.7]],
+        "effect_size": 0.5},
+    {"condition": 'category',
+        "windows": [[0.4, 0.5]],
         "effect_size": 0.5}
 ]
 
@@ -182,8 +185,9 @@ text = (
     '  "effect_size": 4}]'
 )
 ax[1, 0].text(0, 1, text, fontsize=12, va='top', ha='left', family='monospace')
-ax[1, 0].set_title("'effects'", fontsize=12, fontfamily='monospace', color='purple', 
-                   bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
+plt.figure(1).text(0.0890, 0.2302, "'effects'", fontsize=12, transform=plt.figure(1).transFigure, 
+              fontfamily='monospace', color='purple', 
+              bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
 ax[1, 0].set_axis_off()
 
 # 3.2.2. Middle: Plot activation:
@@ -224,8 +228,9 @@ text = (
     '  "effect_size": 0.5}]'
 )
 ax[2, 0].text(0, 1, text, fontsize=12, va='top', ha='left', family='monospace')
-ax[2, 0].set_title("'effects'", fontsize=12, fontfamily='monospace', color='purple', 
-                   bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
+plt.figure(1).text(0.0890, 0.4516, "'effects'", fontsize=12, transform=plt.figure(1).transFigure, 
+              fontfamily='monospace', color='purple', 
+              bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
 ax[2, 0].set_axis_off()
 
 
@@ -256,11 +261,15 @@ ax[2, 2].set_title('Decoding')
 text = (
     '[{"condition": "category",\n'
     '  "windows": [[0.1, 0.2],\n          [0.6, 0.7]],\n'
-    '  "effect_size": 0.5}'
+    '  "effect_size": 0.5} \n'
+    ' {"condition": "category",\n'
+    '  "windows": [0.4, 0.5],\n'
+    '  "effect_size": 0.5}]'
 )
 ax[3, 0].text(0, 1, text, fontsize=12, va='top', ha='left', family='monospace')
-ax[3, 0].set_title("'effects'", fontsize=12, fontfamily='monospace', color='purple', 
-                   bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
+plt.figure(1).text(0.0890, 0.7802, "'effects'", fontsize=12, transform=plt.figure(1).transFigure, 
+              fontfamily='monospace', color='purple', 
+              bbox=dict(boxstyle="round,pad=0.2", fc="whitesmoke", ec="gray", lw=0.5))
 ax[3, 0].set_axis_off()
 
 # 3.2.2. Middle: Plot time resolved decoding:
@@ -302,7 +311,6 @@ plt.figure(1).axes[1].set_position([0.301515, 0.596774, 0.264390, 0.360550])
 plt.figure(1).axes[2].set(position=[0.7382, 0.8422, 0.1829, 0.1291])
 plt.figure(1).axes[2].set_position([0.739923, 0.765435, 0.173719, 0.191882])
 plt.figure(1).axes[3].set_position([0.018076, 0.321180, 0.182232, 0.264405])
-plt.figure(1).axes[3].title.set(visible=False)
 plt.figure(1).axes[3].texts[0].set(position=(-0.0116, 1.304), fontsize=9.)
 plt.figure(1).axes[4].set(position=[0.3015, 0.5349, 0.2767, 0.1312])
 plt.figure(1).axes[4].yaxis.labelpad = -1.279052
@@ -312,33 +320,25 @@ plt.figure(1).axes[5].yaxis.labelpad = -23.423687
 plt.figure(1).axes[5].get_legend().set(visible=True)
 plt.figure(1).axes[5].get_yaxis().get_label().set(position=(448.9, 1.061), fontsize=12., rotation=0.)
 plt.figure(1).axes[6].set_position([0.018076, -0.045751, 0.182232, 0.264405])
-plt.figure(1).axes[6].title.set(visible=False)
 plt.figure(1).axes[6].texts[0].set(position=(-0.0116, 1.841), fontsize=9.)
 plt.figure(1).axes[7].set(position=[0.3015, 0.3098, 0.2767, 0.1312])
 plt.figure(1).axes[8].set(position=[0.699, 0.3098, 0.2767, 0.1312], ylabel='')
-plt.figure(1).axes[8].get_yaxis().get_label().set(text='')
 plt.figure(1).axes[9].set(visible=True)
 plt.figure(1).axes[9].set_position([0.019019, -0.183560, 0.182273, 0.264354])
-plt.figure(1).axes[9].title.set(visible=False)
 plt.figure(1).axes[9].texts[0].set(position=(-0.0167, 1.511), fontsize=9.)
 plt.figure(1).axes[10].set(position=[0.3015, 0.08473, 0.2767, 0.1312])
 plt.figure(1).axes[11].set(position=[0.7679, 0.063, 0.139, 0.1529], xlabel='Testing Time (s)', ylabel='Training time (s)')
 plt.figure(1).axes[11].get_xaxis().get_label().set(position=(0.5, 253.2), text='Testing Time (s)')
 plt.figure(1).axes[11].get_yaxis().get_label().set(position=(447., 0.5), text='Training time (s)')
-plt.figure(1).text(0.0890, 0.4516, "'effects'", transform=plt.figure(1).transFigure, fontsize=12., color='#800080ff')  # id=plt.figure(1).texts[0].new
-plt.figure(1).text(0.0890, 0.2302, "'effects'", transform=plt.figure(1).transFigure, fontsize=12., color='#800080ff')  # id=plt.figure(1).texts[1].new
-plt.figure(1).text(0.0893, 0.7802, "'effects'", transform=plt.figure(1).transFigure, fontsize=12., color='#800080ff')  # id=plt.figure(1).texts[2].new
-plt.figure(1).texts[2].set_position([0.089034, 0.673160])
+plt.figure(1).texts[2].set(position=(0.089, 0.684))
 plt.figure(1).text(0.9363, 0.1997, 'AUC', transform=plt.figure(1).transFigure, fontsize=12.)  # id=plt.figure(1).texts[3].new
 plt.figure(1).text(0.0053, 0.9731, 'A', transform=plt.figure(1).transFigure, fontsize=16., weight='bold')  # id=plt.figure(1).texts[4].new
-plt.figure(1).texts[4].set_position([0.005295, 0.960005])
-plt.figure(1).text(0.0053, 0.7802, 'B', transform=plt.figure(1).transFigure, fontsize=16., weight='bold')  # id=plt.figure(1).texts[5].new
-plt.figure(1).texts[5].set_position([0.005316, 0.673160])
+plt.figure(1).text(0.0053, 0.6825, 'B', transform=plt.figure(1).transFigure, fontsize=16., weight='bold')  # id=plt.figure(1).texts[5].new
 plt.figure(1).text(0.0053, 0.4500, 'C', transform=plt.figure(1).transFigure, fontsize=16., weight='bold')  # id=plt.figure(1).texts[6].new
 plt.figure(1).text(0.0053, 0.2302, 'D', transform=plt.figure(1).transFigure, fontsize=16., weight='bold')  # id=plt.figure(1).texts[7].new
 plt.figure(1).text(0.2725, 0.4516, 'a.u.', transform=plt.figure(1).transFigure, )  # id=plt.figure(1).texts[8].new
 plt.figure(1).text(0.6664, 0.4483, 'AUC', transform=plt.figure(1).transFigure, fontsize=12.)  # id=plt.figure(1).texts[9].new
 #% end: automatic generated code from pylustrator
-
+plt.show()
 plt.savefig('./paper/figure1.png')
 plt.close()
