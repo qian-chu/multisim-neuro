@@ -57,8 +57,7 @@ pygments_style = "sphinx"
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 
-bibtex_bibfiles = ['../../paper/paper.bib']
-
+bibtex_bibfiles = ["../../paper/paper.bib"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -74,6 +73,14 @@ html_theme_options = {
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links"],
     "logo": {"image_light": "logo.svg"},
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/AlexLepauvre/multisim-neuro",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        },
+    ],
 }
 nbsphinx_prolog = """
 .. raw:: html
