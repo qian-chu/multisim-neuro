@@ -1,69 +1,63 @@
-# MEEG Simulator
+# MultiSim: A Python Toolbox for Simulating Datasets with Time-Resolved Multivariate Effects
 
-**Simulate realistic MEG/EEG data with ground-truth multivariate effects**
+## Motivation and Overview
+
+One critical challenge in designing analysis pipelines for MEG/EEG data is confirming that the pipeline is both sensitive (i.e., it detects real effects) and specific (i.e., it avoids false alarms). In most cases, it is not known a priori whether or when experimental effects are present in the data, and it is therefore not possible to assess the sensitivity and specificity of analysis pipelines based on the data one is trying to analyse.
+
+**MultiSim** is a Python package for simulating multivariate EEG/MEG datasets with user-defined experimental effects.  
+It enables principled testing and validation of decoding pipelines, source reconstruction methods, and statistical analyses.
+
+Specifically, the toolbox allows to:
+
+- Specify a between-trial design (e.g., two conditions, Condition A and Condition B).
+- Inject multivariate effects at particular time windows (e.g., Condition A is active from 100–200 ms, Condition B from 300–400 ms).
+- Control signal-to-noise ratio, spatial covariance, temporal smoothing, and between-subject variability
+- Generate multiple subjects for group-level statistical analysis
+- Export to [MNE](https://mne.tools/) and [EEGLAB](https://sccn.ucsd.edu/eeglab/) formats
+- Validate that the pipeline recovers the known effects accurately.
 
 ## Installation
 
-```bash
-pip install meeg_simulator
-```
-
-Or clone and install the development version:
+You can install the package using pip:
 
 ```bash
-git clone https://github.com/YourOrg/meeg_simulator.git
-cd meeg_simulator
-pip install -e .[full]
+pip install multisim-neuro
 ```
 
-## Features
+## Usage Example
 
-- Design-driven simulation: specify arbitrary experimental design matrices (conditions, interactions, parametric regressors).
-
-- Time‑locked effects: inject multivariate patterns in chosen time windows with exact control over effect size (Mahalanobis distance).
-
-- Noise modeling: control within‑subject sensor noise and between‑subject variability.
-
-- Spatial covariance: simulate correlated sensors or modes via any user‑supplied covariance matrix.
-
-- MNE & EEGLAB export: seamless conversion to mne.EpochsArray or EEGLAB .set files.
-
-- Power analysis: predict group‑level statistical power from trials, subjects, and effect sizes.
-
-## Quickstart
 ```python
 import numpy as np
-from meeg_simulator import Simulator
+import pandas as pd
+from multisim import Simulator
 
-# 1. Create a simple design: two conditions, 100 trials
-X = np.vstack([np.zeros(100), np.ones(100)]).T  
-t_win   = np.array([[0.1, 0.3]])    # effect between 100–300 ms
-effects = np.array([1])             # effect on condition 1
+# Define experimental design: 100 trials, 1 condition
+X = pd.DataFrame(np.random.randn(100, 1), columns=["category"])
+effects = [{"condition": "category", "windows": [0.1, 0.3], "effect_size": 0.5}]
 
-# 2. Instantiate simulator
+# Simulate data
 sim = Simulator(
-    X, noise_std=1.0, n_channels=64, n_subjects=10,
-    tmin=-0.2, tmax=0.8, sfreq=250,
-    t_win=t_win, effects=effects,
-    effect_size=[0.5],               # multivariate d′ = 0.5
-    intersub_noise_std=0.1           # between-subject σ
+    X,
+    effects,
+    noise_std=0.1,
+    n_channels=64,
+    n_subjects=20,
+    tmin=-0.2,
+    tmax=0.8,
+    sfreq=250,
 )
-
-# 3. Export to MNE Epochs and decode
-epochs_list = sim.export_to_mne()
-# ... run your decoding pipeline on epochs_list ...
+print(sim) # Overview of the simulation parameters
+first_subject_data = sim.data[0]  # Access data for the first subject
 ```
 
-## API
-After installation, see full class and method documentation at: https://alexlepauvre.github.io/meeg_simulator/index.html
+## Documentation
 
-You can find extensive tutorials at:
-https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html
+Documentation and tutorials are available at: <https://github.com/AlexLepauvre/multisim-neuro>
 
-## Customization
+## License
 
-- Spatial pattern: pass a custom covariance matrix or weight vector to concentrate signal in subsets of channels.
+MultiSim is licensed under the MIT License.
 
-- Temporal kernel: supply any causal kernel to shape the time-course of effects.
+## Citation
 
-- Effect size: Simulate multivariate effect at particular effect size to test the ability of your pipelines to retrieve it given the number of subjects and trials for each subject
+If you use this toolbox in your research, please cite the accompanying paper (in prep).
