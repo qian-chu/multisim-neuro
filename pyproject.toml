@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "multisim"
+name = "multi-sim"
 dynamic = ["version"]
-description = "A package for simulating MEEG data"
+description = "A package for simulating time resolved data with multivariate effects"
 authors = [
     { name = "Alex Lepauvre", email = "alex.lepauvre@gmail.com" }
 ]
@@ -19,8 +19,8 @@ export = ["mne", "eeglabio"]
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://github.com/AlexLepauvre/meeg_simulator"
-Repository = "https://github.com/AlexLepauvre/meeg_simulator"
+Homepage = "https://github.com/AlexLepauvre/multi-sim"
+Repository = "https://github.com/AlexLepauvre/multi-sim"
 
 [tool.setuptools]
 packages = ["multisim"]  # Automatically find the package

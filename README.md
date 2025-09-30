@@ -1,18 +1,18 @@
-# MEEG Simulator
+# MultiSim
 
 **Simulate realistic MEG/EEG data with ground-truth multivariate effects**
 
 ## Installation
 
 ```bash
-pip install meeg_simulator
+pip install multi-sim
 ```
 
 Or clone and install the development version:
 
 ```bash
-git clone https://github.com/YourOrg/meeg_simulator.git
-cd meeg_simulator
+git clone https://github.com/AlexLepauvre/multi-sim
+cd multi-sim
 pip install -e .[full]
 ```
 
@@ -33,7 +33,7 @@ pip install -e .[full]
 ## Quickstart
 ```python
 import numpy as np
-from meeg_simulator import Simulator
+from multisim import Simulator
 
 # 1. Create a simple design: two conditions, 100 trials
 X = np.vstack([np.zeros(100), np.ones(100)]).T  
@@ -55,10 +55,10 @@ epochs_list = sim.export_to_mne()
 ```
 
 ## API
-After installation, see full class and method documentation at: https://alexlepauvre.github.io/meeg_simulator/index.html
+After installation, see full class and method documentation at: https://alexlepauvre.github.io/multi-sim/index.html
 
 You can find extensive tutorials at:
-https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html
+https://alexlepauvre.github.io/multi-sim/tutorial/index.html
 
 ## Customization
 
@@ -73,7 +73,7 @@ If you use the scripts found in this repository, you can use the DOI provided by
 
 ```
 @article{LepauvreEtAl2024,
-  title = {COGITATE-iEEG-DATA-RELEASE},
+  title = {MultiSim},
   author = {Lepauvre, Alex and Chu, Qian and Zeidman, Peter and Melloni, Lucia},
   year = {2025},
   doi = {TBA},
