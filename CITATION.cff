@@ -1,6 +1,6 @@
 cff-version: 0.0.0
 message: "If you use this software, please cite it using the following metadata."
-title: "iEEG-data-release"
+title: "MultiSim"
 authors:
   - family-names: "Lepauvre"
     given-names: "Alex"
