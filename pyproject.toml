@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "multi-sim"
+name = "multisim-neuro"
 dynamic = ["version"]
 description = "A package for simulating time resolved data with multivariate effects"
 authors = [
@@ -19,8 +19,8 @@ export = ["mne", "eeglabio"]
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://github.com/AlexLepauvre/multi-sim"
-Repository = "https://github.com/AlexLepauvre/multi-sim"
+Homepage = "https://github.com/AlexLepauvre/multisim-neuro"
+Repository = "https://github.com/AlexLepauvre/multisim-neuro"
 
 [tool.setuptools]
 packages = ["multisim"]  # Automatically find the package

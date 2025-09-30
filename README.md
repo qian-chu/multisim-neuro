@@ -5,14 +5,14 @@
 ## Installation
 
 ```bash
-pip install multi-sim
+pip install multisim-neuro
 ```
 
 Or clone and install the development version:
 
 ```bash
-git clone https://github.com/AlexLepauvre/multi-sim
-cd multi-sim
+git clone https://github.com/AlexLepauvre/multisim-neuro
+cd multisim-neuro
 pip install -e .[full]
 ```
 
@@ -55,10 +55,10 @@ epochs_list = sim.export_to_mne()
 ```
 
 ## API
-After installation, see full class and method documentation at: https://alexlepauvre.github.io/multi-sim/index.html
+After installation, see full class and method documentation at: https://alexlepauvre.github.io/multisim-neuro/index.html
 
 You can find extensive tutorials at:
-https://alexlepauvre.github.io/multi-sim/tutorial/index.html
+https://alexlepauvre.github.io/multisim-neuro/tutorial/index.html
 
 ## Customization
 
