@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MultiSim: A toolbox for simulating multivariate EEG/MEG data &#8212; multisim 0.1 documentation</title>
+    <title>MultiSim: A Python Toolbox for Simulating Datasets with Time-Resolved Multivariate Effects &#8212; multisim 0.1 documentation</title>
   
   
   
@@ -166,6 +166,22 @@
         </div>
       
       
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
     </div>
     
   </div>
@@ -235,6 +251,26 @@
     
     
     
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
   </div>
   
   
@@ -265,103 +301,71 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="multisim-a-toolbox-for-simulating-multivariate-eeg-meg-data">
-<h1>MultiSim: A toolbox for simulating multivariate EEG/MEG data<a class="headerlink" href="#multisim-a-toolbox-for-simulating-multivariate-eeg-meg-data" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="multisim-a-python-toolbox-for-simulating-datasets-with-time-resolved-multivariate-effects">
+<span id="module-multisim"></span><h1>MultiSim: A Python Toolbox for Simulating Datasets with Time-Resolved Multivariate Effects<a class="headerlink" href="#multisim-a-python-toolbox-for-simulating-datasets-with-time-resolved-multivariate-effects" title="Link to this heading">#</a></h1>
 <section id="motivation-and-overview">
 <h2>Motivation and Overview<a class="headerlink" href="#motivation-and-overview" title="Link to this heading">#</a></h2>
 <p>One critical challenge in designing analysis pipelines for MEG/EEG data is confirming that the pipeline is both sensitive (i.e., it detects real effects) and specific (i.e., it avoids false alarms). In most cases, it is not known a priori whether or when experimental effects are present in the data, and it is therefore not possible to assess the sensitivity and specificity of analysis pipelines based on the data one is trying to analyse.</p>
 <p><strong>MultiSim</strong> is a Python package for simulating multivariate EEG/MEG datasets with user-defined experimental effects.
 It enables principled testing and validation of decoding pipelines, source reconstruction methods, and statistical analyses.</p>
-</section>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
-<p>Specifically, the toolbox allows to:
-- Specify a between-trial design (e.g., two conditions, Condition A and Condition B).
-- Inject multivariate effects at particular time windows (e.g., Condition A is active from 100–200 ms, Condition B from 300–400 ms).
-- Control signal-to-noise ratio, spatial covariance, temporal smoothing, and between-subject variability
-- Generate multiple subjects for group-level statistical analysis
-- Export to <a class="reference external" href="https://mne.tools/">MNE-Python</a> and <a class="reference external" href="https://sccn.ucsd.edu/eeglab/">EEGLAB</a> formats
-- Validate that the pipeline recovers the known effects accurately.</p>
+<p>Specifically, the toolbox allows to:</p>
+<ul class="simple">
+<li><p>Specify a between-trial design (e.g., two conditions, Condition A and Condition B).</p></li>
+<li><p>Inject multivariate effects at particular time windows (e.g., Condition A is active from 100–200 ms, Condition B from 300–400 ms).</p></li>
+<li><p>Control signal-to-noise ratio, spatial covariance, temporal smoothing, and between-subject variability</p></li>
+<li><p>Generate multiple subjects for group-level statistical analysis</p></li>
+<li><p>Export to <a class="reference external" href="https://mne.tools/">MNE</a> and <a class="reference external" href="https://sccn.ucsd.edu/eeglab/">EEGLAB</a> formats</p></li>
+<li><p>Validate that the pipeline recovers the known effects accurately.</p></li>
+</ul>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>You can install the package using pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>multisim
-</pre></div>
-</div>
-<p>To install with full dependencies (e.g., for notebooks, visualization, or exporting to other formats):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>multisim<span class="o">[</span>full<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>multisim-neuro
 </pre></div>
 </div>
 </section>
 <section id="usage-example">
 <h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">multisim</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multisim</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
 
-<span class="c1"># Define experimental design</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 100 trials, 2 experimental conditions</span>
-
-<span class="c1"># Define time window of effect and its location in design matrix</span>
-<span class="n">t_win</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>  <span class="c1"># Effect between 200–500 ms</span>
-<span class="n">effects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>         <span class="c1"># Effect linked to second condition</span>
+<span class="c1"># Define experimental design: 100 trials, 1 condition</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
+<span class="n">effects</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}]</span>
 
 <span class="c1"># Simulate data</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
-   <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
-   <span class="n">noise_std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-   <span class="n">n_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-   <span class="n">n_subjects</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-   <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span>
-   <span class="n">tmax</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-   <span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
-   <span class="n">t_win</span><span class="o">=</span><span class="n">t_win</span><span class="p">,</span>
-   <span class="n">effects</span><span class="o">=</span><span class="n">effects</span><span class="p">,</span>
-   <span class="n">effect_size</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">],</span>  <span class="c1"># Mahalanobis effect size</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">effects</span><span class="p">,</span>
+    <span class="n">noise_std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">n_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">n_subjects</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># List of simulated subjects</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span> <span class="c1"># Overview of the simulation parameters</span>
+<span class="n">first_subject_data</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Access data for the first subject</span>
 </pre></div>
 </div>
 </section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
-<p>Documentation and tutorials are available at:</p>
-<p><a class="reference external" href="https://alexlepauvre.github.io/meeg_simulator/">https://alexlepauvre.github.io/meeg_simulator/</a></p>
+<p>Documentation and tutorials are available at: <a class="github reference external" href="https://github.com/AlexLepauvre/multisim-neuro">AlexLepauvre/multisim-neuro</a></p>
 </section>
 <section id="license">
 <h2>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MIT License
-
-Copyright (c) 2025 Alex lepauvre
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-</pre></div>
-</div>
+<p>MultiSim is licensed under the MIT License.</p>
 </section>
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading">#</a></h2>
 <p>If you use this toolbox in your research, please cite the accompanying paper (in prep).</p>
+</section>
+</section>
 <div class="toctree-wrapper compound">
 </div>
-</section>
-</section>
 
 
                 </article>
@@ -402,7 +406,6 @@ SOFTWARE.
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-and-overview">Motivation and Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage Example</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>

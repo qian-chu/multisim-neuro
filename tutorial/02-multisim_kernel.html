@@ -165,6 +165,22 @@
         </div>
       
       
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
     </div>
     
   </div>
@@ -231,6 +247,26 @@
       </div>
     
     
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
     
   </div>
   
@@ -326,7 +362,9 @@
 
 <span class="c1"># Add descriptors:</span>
 <span class="n">cond_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;attention&quot;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>  <span class="c1"># Add a column for the interaction between category and attention</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span>
+<span class="p">)</span>  <span class="c1"># Add a column for the interaction between category and attention</span>
 <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;face&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">},</span>
     <span class="s2">&quot;attention&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;attended&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;unattended&quot;</span><span class="p">},</span>
@@ -334,9 +372,9 @@
 
 <span class="c1"># Specifying the effects:</span>
 <span class="n">effects</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span> 
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;attention&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
-    <span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;attention&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
 
 <span class="c1"># Data parameters:</span>
 <span class="n">n_channels</span> <span class="o">=</span> <span class="mi">32</span>  <span class="c1"># EEG system with 32 electrodes</span>
@@ -372,7 +410,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cc7eb3a17663658687cc2afc782ee50de1bdb75c1fb8d5e5b818eb43627693e8.png" src="../_images/cc7eb3a17663658687cc2afc782ee50de1bdb75c1fb8d5e5b818eb43627693e8.png" />
+<img alt="../_images/fe7c0fd82551e306c493e4fb988542d85c459a134c8fecc98822fbfaaeb495b6.png" src="../_images/fe7c0fd82551e306c493e4fb988542d85c459a134c8fecc98822fbfaaeb495b6.png" />
 </div>
 </div>
 <p>You can play around with the shape and scale parameters to obtain different temporal profiles. I chose these parameters as I thought they look reasonable. Note that here, despite the kernel starting at t = 0, when we convolve it with the data, it will start to rise only from the first sample at which we have an effect and ramp up from there. So don’t try to specify a kernel that starts at the time point you’d want to see your effect, this is taken care of above by specifying the time window for your effect.</p>
@@ -386,7 +424,7 @@
 
 <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-    <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+    <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
     <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
     <span class="n">n_channels</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
     <span class="n">n_subjects</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -424,11 +462,11 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 projection items activated
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_3173/238737532.py:1: RuntimeWarning: Cannot find channel coordinates in the supplied Evokeds. Not showing channel locations.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_3132/238737532.py:1: RuntimeWarning: Cannot find channel coordinates in the supplied Evokeds. Not showing channel locations.
   epochs[0].plot_image(picks=[0], scalings=dict(eeg=1));
 </pre></div>
 </div>
-<img alt="../_images/1809807dcae2b7c0d76160cd7a8abeec262fb63b3fdd5824345afeca1e4b2752.png" src="../_images/1809807dcae2b7c0d76160cd7a8abeec262fb63b3fdd5824345afeca1e4b2752.png" />
+<img alt="../_images/5ada59eee0f6f3c30058ef5592147e9cdf0e365780c4a6b1c0dab3e606246e5f.png" src="../_images/5ada59eee0f6f3c30058ef5592147e9cdf0e365780c4a6b1c0dab3e606246e5f.png" />
 </div>
 </div>
 </section>
@@ -467,9 +505,7 @@
 <span class="c1"># Decode attended vs. unattended:</span>
 <span class="n">att_lbl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;attention&quot;</span><span class="p">][</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="n">scores_attention</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
-    <span class="n">cross_val_multiscore</span><span class="p">(</span>
-        <span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
-    <span class="p">),</span>
+    <span class="n">cross_val_multiscore</span><span class="p">(</span><span class="n">time_decod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">att_lbl</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">),</span>
     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -491,7 +527,7 @@
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
-<img alt="../_images/858dec2484f1217b6910218ce9d0b11a1a7d560b54f5eced44b847b328098b1c.png" src="../_images/858dec2484f1217b6910218ce9d0b11a1a7d560b54f5eced44b847b328098b1c.png" />
+<img alt="../_images/2d0d4e0105be6f6c6ec60c4832aeceb904f991d3fd41222449fa9ef8a82dd2bb.png" src="../_images/2d0d4e0105be6f6c6ec60c4832aeceb904f991d3fd41222449fa9ef8a82dd2bb.png" />
 </div>
 </div>
 </section>
@@ -569,13 +605,13 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using a threshold of 1.729133
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-1.9593138365274967 max=14.322515212774308
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.3835997897955283 max=13.44327306764563
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running initial clustering …
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 6 clusters
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 3 clusters
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
@@ -585,22 +621,22 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|          | Permuting : 0/1023 [00:00&lt;?,       ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 18%|█▊        | Permuting : 188/1023 [00:00&lt;00:00, 5485.23it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 19%|█▊        | Permuting : 191/1023 [00:00&lt;00:00, 5558.68it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 37%|███▋      | Permuting : 382/1023 [00:00&lt;00:00, 5563.65it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 38%|███▊      | Permuting : 385/1023 [00:00&lt;00:00, 5438.77it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 56%|█████▌    | Permuting : 574/1023 [00:00&lt;00:00, 5565.25it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 57%|█████▋    | Permuting : 579/1023 [00:00&lt;00:00, 5400.02it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 75%|███████▍  | Permuting : 767/1023 [00:00&lt;00:00, 5561.69it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 76%|███████▋  | Permuting : 781/1023 [00:00&lt;00:00, 5401.23it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 94%|█████████▍| Permuting : 961/1023 [00:00&lt;00:00, 5568.66it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 96%|█████████▌| Permuting : 982/1023 [00:00&lt;00:00, 5303.72it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5531.02it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5213.83it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -609,34 +645,34 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using a threshold of 1.729133
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.9279953951318523 max=15.339652466932133
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.3946549665910775 max=14.476965705514065
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running initial clustering …
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 4 clusters
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 3 clusters
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|          | Permuting : 0/1023 [00:00&lt;?,       ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 18%|█▊        | Permuting : 189/1023 [00:00&lt;00:00, 5515.60it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 19%|█▉        | Permuting : 193/1023 [00:00&lt;00:00, 5640.92it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 37%|███▋      | Permuting : 378/1023 [00:00&lt;00:00, 5524.19it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 36%|███▋      | Permuting : 371/1023 [00:00&lt;00:00, 5364.55it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 56%|█████▌    | Permuting : 568/1023 [00:00&lt;00:00, 5501.51it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 56%|█████▌    | Permuting : 570/1023 [00:00&lt;00:00, 5412.69it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 74%|███████▍  | Permuting : 762/1023 [00:00&lt;00:00, 5481.96it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 77%|███████▋  | Permuting : 787/1023 [00:00&lt;00:00, 5292.83it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 95%|█████████▌| Permuting : 974/1023 [00:00&lt;00:00, 5429.07it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 96%|█████████▌| Permuting : 982/1023 [00:00&lt;00:00, 5354.47it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5381.57it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting : 1023/1023 [00:00&lt;00:00, 5298.30it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -682,7 +718,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b12c4abf55fef235083fc734365efd83095fe85eff1ae0153d823d05f271741f.png" src="../_images/b12c4abf55fef235083fc734365efd83095fe85eff1ae0153d823d05f271741f.png" />
+<img alt="../_images/cf1821bc5f388308fca20d890c46f6ebd9ece087482dda01d9c47faaa1da6fa4.png" src="../_images/cf1821bc5f388308fca20d890c46f6ebd9ece087482dda01d9c47faaa1da6fa4.png" />
 </div>
 </div>
 <p>These results align with what we would expect. However, you probably noticed that this time, the effect don’t seem to be restricted to the time points we have specified. That’s to be expected. The gamma kernel are convolved with the time windows of our effects, so the effects gets protruded in time. If you want to avoid this, you should specify your effect as a single point in time (one sample) which when convolved with a temporally extended kernel will become protruded in time. You can then play around with the spread of your kernel to control the duration of the effect. So when using a kernel, it is a bit less straight forward to specify clear time points for your effects.</p>

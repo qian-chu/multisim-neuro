@@ -166,6 +166,22 @@
         </div>
       
       
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
     </div>
     
   </div>
@@ -232,6 +248,26 @@
       </div>
     
     
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
     
   </div>
   
@@ -342,7 +378,7 @@
 <h2>Effect size<a class="headerlink" href="#effect-size" title="Link to this heading">#</a></h2>
 <p>Effect sizes are simulated based on the Mahalanobis distance (<span id="id1">[<a class="reference internal" href="#id7" title="Goeffrey J McLachlan. Mahalanobis distance. Resonance, 4(6):20–26, 1999.">1</a>]</span>, <span id="id2">[<a class="reference internal" href="#id8" title="Prasanta Chandra Mahalanobis. On tests and measures of group divergence. J. Asiat. Soc. Bengal, 26:541–588, 1930.">2</a>]</span>), which is a multivariate generalization of the standard z-score, taking into account the covariance structure of the data. For two classes, the Mahalanobis distance is defined as:</p>
 <div class="math notranslate nohighlight">
-\[\Delta =  \sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}\]</div>
+\[\Delta = \sqrt{(\mu_{1} - \mu_{2})^{T}\Sigma^{-1}(\mu_{1} - \mu_{2})}\]</div>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\mu_{1}\)</span> is the mean of the first condition</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mu_{2}\)</span> is the mean of the second condition</p></li>
@@ -385,11 +421,11 @@
 <h3>Effect size and decoding accuracy<a class="headerlink" href="#effect-size-and-decoding-accuracy" title="Link to this heading">#</a></h3>
 <p>With equal class covariances, a Bayes-optimal linear classifier achieves:</p>
 <div class="math notranslate nohighlight">
-\[\Phi(-\frac{1}{2}d')\]</div>
+\[\Phi(-\frac{1}{2}\Delta)\]</div>
 <p>Where <span class="math notranslate nohighlight">\(\Phi\)</span> is the normal distribution cummulative distribution function (<span id="id3">[<a class="reference internal" href="#id7" title="Goeffrey J McLachlan. Mahalanobis distance. Resonance, 4(6):20–26, 1999.">1</a>]</span>, <span id="id4">[<a class="reference internal" href="#id9" title="Geoffrey J McLachlan. Discriminant analysis and statistical pattern recognition. John Wiley &amp; Sons, 2005.">3</a>]</span>). Accordingly, the maximal theoretical decoding accuracy is equal to:</p>
 <div class="math notranslate nohighlight">
-\[1 - \Phi(-\frac{1}{2}d')\]</div>
-<p>Thus an effect size of <span class="math notranslate nohighlight">\(d'=0.5\)</span> implies a theoretical ceiling of ≈ 69 % accuracy, <span class="math notranslate nohighlight">\(d'=1\)</span> gives ≈ 84 %, and so on.  By scaling the injected pattern according to the formula above, <strong>multisim</strong> ensures that simulated data respect this relationship irrespective of the number of channels or their covariance.</p>
+\[1 - \Phi(-\frac{1}{2}\Delta)\]</div>
+<p>Thus an effect size of <span class="math notranslate nohighlight">\(\Delta=0.5\)</span> implies a theoretical ceiling of ≈ 69 % accuracy, <span class="math notranslate nohighlight">\(\Delta=1\)</span> gives ≈ 84 %, and so on.  By scaling the injected pattern according to the formula above, <strong>multisim</strong> ensures that simulated data respect this relationship irrespective of the number of channels or their covariance.</p>
 </section>
 </section>
 <section id="references">

@@ -167,6 +167,22 @@
         </div>
       
       
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
     </div>
     
   </div>
@@ -233,6 +249,26 @@
       </div>
     
     
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/AlexLepauvre/multisim-neuro" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
     
   </div>
   
@@ -365,9 +401,9 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 
 <span class="c1"># Specifying the effects:</span>
 <span class="n">effects</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span> 
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;attention&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
-    <span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;attention&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
 </pre></div>
 </div>
 </div>
@@ -386,12 +422,14 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_trials</span><span class="p">:</span>
     <span class="c1"># Design matrix:</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> 
-                     <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># Simulate the data:</span>
     <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
         <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-        <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+        <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
         <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
         <span class="n">n_channels</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
         <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -438,7 +476,7 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
-<img alt="../_images/6bfd55e17b0b6bf96fd54243783f6a5758c128909408999e0463e3c22e5468e2.png" src="../_images/6bfd55e17b0b6bf96fd54243783f6a5758c128909408999e0463e3c22e5468e2.png" />
+<img alt="../_images/febea1152d5f09b20412406553e466fa53ab6bb4171d7d4549eb72dcd332d08c.png" src="../_images/febea1152d5f09b20412406553e466fa53ab6bb4171d7d4549eb72dcd332d08c.png" />
 </div>
 </div>
 <p>As we can see, increasing the number of trials only helps until a certain point. There is not so big of a difference between 160 and 320 trials.</p>
@@ -452,12 +490,14 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <span class="n">time_decod</span> <span class="o">=</span> <span class="n">SlidingEstimator</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Design matrix:</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2000</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2000</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                 <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2000</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2000</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="c1"># Simulate the data:</span>
 <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-    <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+    <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
     <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
     <span class="n">n_channels</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
     <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -505,7 +545,7 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
-<img alt="../_images/c987f7751caf0ab5f1be1e137a42a48b5d3da81bd745ae446493b77ed152e95d.png" src="../_images/c987f7751caf0ab5f1be1e137a42a48b5d3da81bd745ae446493b77ed152e95d.png" />
+<img alt="../_images/dadbb3278d9b38035f7921ab2f4434f34630ab0357453f8b22610b378a8c8bb8.png" src="../_images/dadbb3278d9b38035f7921ab2f4434f34630ab0357453f8b22610b378a8c8bb8.png" />
 </div>
 </div>
 </section>
@@ -526,12 +566,13 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_channels</span><span class="p">:</span>
     <span class="c1"># Design matrix:</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">40</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                     <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">40</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span>
+    <span class="p">)</span>
     <span class="c1"># Simulate the data:</span>
     <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
         <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-        <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+        <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
         <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
         <span class="n">n</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
         <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -578,7 +619,7 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Sensor space decoding&#39;)
 </pre></div>
 </div>
-<img alt="../_images/41e3483dd38ed3bf95f3e6b29e066e9fd87030639691875c2f0e6f91b80a1c39.png" src="../_images/41e3483dd38ed3bf95f3e6b29e066e9fd87030639691875c2f0e6f91b80a1c39.png" />
+<img alt="../_images/f9191c5630fdabc63898a95b62239d739f450813d923f34d31d8094e8db365a5.png" src="../_images/f9191c5630fdabc63898a95b62239d739f450813d923f34d31d8094e8db365a5.png" />
 </div>
 </div>
 <p>Surprisingly, the decoding accuracy decreases with increased number of channels, which shouldn’t happen based on our normalization. However, this behavior is expected. When we increase the number of features, we need to decrease the magnitude of the activation in each channel that are part of the pattern to yield a similar theoretical effect size. If we kept the magnitude the same, we would increase the effect size when increasing the number of channels. However, by decreasing the magnitude in each channel, we make it harder to discriminate from the noise of the signal, explaining the decrease in decoding accuracy.</p>
@@ -605,18 +646,20 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Design matrix:</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">320</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">320</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                 <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">320</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="mi">320</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="c1"># Specifying the effects:</span>
 <span class="n">effects</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span> 
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;attention&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}</span>
-    <span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;attention&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+<span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
 
 <span class="c1"># Simulate the data:</span>
 <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
     <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-    <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+    <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
     <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
     <span class="mi">32</span><span class="p">,</span>  <span class="c1"># Number of channelss</span>
     <span class="mi">8</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -687,13 +730,13 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using a threshold of 1.894579
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-3.253223265529199 max=3.167643315207243
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stat_fun(H1): min=-2.7444992028346906 max=3.083985665310546
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running initial clustering …
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 1 cluster
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 3 clusters
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
@@ -703,16 +746,16 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|          | Permuting (exact test) : 0/255 [00:00&lt;?,       ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 80%|████████  | Permuting (exact test) : 205/255 [00:00&lt;00:00, 5704.64it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 78%|███████▊  | Permuting (exact test) : 200/255 [00:00&lt;00:00, 5612.65it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting (exact test) : 255/255 [00:00&lt;00:00, 5544.22it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| Permuting (exact test) : 255/255 [00:00&lt;00:00, 5115.54it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<img alt="../_images/9e14c93f5e2f316f88b04d2046c76a2df126a5666c06d901e78258e3947be8c4.png" src="../_images/9e14c93f5e2f316f88b04d2046c76a2df126a5666c06d901e78258e3947be8c4.png" />
+<img alt="../_images/ccb362aff52945e4c400044b5bfbe741baaa2f50580a74925f715f85da6cad44.png" src="../_images/ccb362aff52945e4c400044b5bfbe741baaa2f50580a74925f715f85da6cad44.png" />
 </div>
 </div>
 <p>Crucially, you should decide on the number of trials per subject to make sure you approach the ceiling decoding accuracy based on your effect size, and you should select the number of subjects to be able to detect an effect of that magnitude in your sample.</p>
@@ -727,21 +770,23 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 
 <span class="c1"># Specifying the effects:</span>
 <span class="n">effects</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span> 
-    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s1">&#39;attention&#39;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}</span>
-    <span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="s2">&quot;attention&quot;</span><span class="p">,</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="s2">&quot;effect_size&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
+<span class="p">]</span>  <span class="c1"># Packaging them in a list to pass to the simulator class</span>
 
 
 <span class="n">tstat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">n_subjects</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_trials</span><span class="p">)))</span>
 <span class="k">for</span> <span class="n">i_s</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n_subjects</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i_t</span><span class="p">,</span> <span class="n">nt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
         <span class="c1"># Design matrix:</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">nt</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">nt</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                         <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">nt</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">nt</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">cond_names</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="c1"># Simulate the data:</span>
         <span class="n">sims</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span>
             <span class="n">X</span><span class="p">,</span>  <span class="c1"># Design matrix</span>
-            <span class="n">effects</span><span class="p">,</span> <span class="c1"># Effects to simulate</span>
+            <span class="n">effects</span><span class="p">,</span>  <span class="c1"># Effects to simulate</span>
             <span class="n">noise_std</span><span class="p">,</span>  <span class="c1"># Observation noise</span>
             <span class="mi">32</span><span class="p">,</span>  <span class="c1"># Number of channels</span>
             <span class="n">ns</span><span class="p">,</span>  <span class="c1"># Number of subjects</span>
@@ -793,7 +838,7 @@ d' = \frac{\mu_{1} - \mu_{2}}{\sigma}
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Number of subjects&#39;)
 </pre></div>
 </div>
-<img alt="../_images/704a1083b6b741f7a876382385f07ade7da2c14ee71d7269c5d57fd5c164c76c.png" src="../_images/704a1083b6b741f7a876382385f07ade7da2c14ee71d7269c5d57fd5c164c76c.png" />
+<img alt="../_images/426fece1185205d4749242823ff27803615b1f87fc3b7b313b7177f12a9e9224.png" src="../_images/426fece1185205d4749242823ff27803615b1f87fc3b7b313b7177f12a9e9224.png" />
 </div>
 </div>
 </section>
