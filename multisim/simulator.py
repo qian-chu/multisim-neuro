@@ -24,7 +24,7 @@ class Simulator:
         ================ ================================
         ``condition``    Column name in ``X``.
         ``windows``      List of ``(start, end)`` time pairs (seconds).
-        ``effect_size``  Mahalanobis distance (:math:`d'`).
+        ``effect_size``  Mahalanobis distance (:math:`\Delta`).
         ``effect_amp``   Amplitude of β-weights directly.
         ================ ================================
 
@@ -51,6 +51,11 @@ class Simulator:
         Standard deviation of between-subject variability in effect amplitude. Defaults to 0.
     random_state : int | numpy.random.Generator | None
         Seed or generator for reproducibility.
+    
+    Attributes
+    ----------
+    data : list of ndarray, shape (n_epochs, n_channels, n_samples)
+        Simulated data for each subject.
 
     Notes
     -----
@@ -62,7 +67,7 @@ class Simulator:
 
     .. math::
 
-        d' = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
+        \Delta = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
 
     where :math:`\\sigma` = ``noise_std``, :math:`\\Sigma` = ``ch_cov`` (channel covariance),
     and :math:`v` = channel pattern (unit vector across channels).
@@ -72,17 +77,17 @@ class Simulator:
 
     .. math::
 
-        d' = \\frac{a}{\\sigma}
+        \Delta = \\frac{a}{\\sigma}
 
     so the amplitude we must inject is
 
     .. math::
 
-        a = d'\\sigma
+        a = \Delta\\sigma
 
     If the user supplies ``effect_amp`` directly, that value is taken instead
     and the conversion above is skipped.
-
+    
     References
     ----------
     .. [1] Friston, K., & Zeidman, P. "DEMO_CVA_RSA.m", Statistical Parametric Mapping (SPM).
@@ -95,18 +100,27 @@ class Simulator:
     >>> import numpy as np
     >>> import pandas as pd
     >>> from multisim import Simulator
-    >>> X = pd.DataFrame(np.random.randn(100, 1), columns=["category"]) # 100 trials, 1 condition
-    >>> effects = [
-        {"condition": "category",
-         "windows": [0.1, 0.3],
-         "effect_size": 0.5
-        }
-    ]
-    >>> sims = Simulator(
-    ...   X, effects, noise_std=0.1, n_channels=64, n_subjects=20,
-    ...   tmin=-0.2, tmax=0.8, sfreq=250,
-    ...   )
-    >>> sims.summary()  # Should return 20 subjects
+    >>> # Define experimental design: 100 trials, 1 condition
+    >>> X = pd.DataFrame(np.random.randn(100, 1), columns=["category"])
+    >>> effects = [{"condition": "category", "windows": [0.1, 0.3], "effect_size": 0.5}]
+    
+    >>> sim = Simulator(
+        X,
+        effects,
+        noise_std=0.1,
+        n_channels=64,
+        n_subjects=20,
+        tmin=-0.2,
+        tmax=0.8,
+        sfreq=250,
+    )
+    >>> print(sim)
+    Subjects  : 20
+    Epochs    : 100
+    Samples   : 249
+    Channels  : 64
+    Conditions: 1 (category)
+    >>> sub_data = sim.data[0] # Data for first subject
     """
 
     def __init__(
@@ -428,7 +442,7 @@ class Simulator:
 
         Notes
         -----
-        Requires 'mne' and 'eeglabio' packages.
+        Requires 'eeglabio' package.
         Each subject's data will be saved as a separate EEGLAB file.
         """
         try:
