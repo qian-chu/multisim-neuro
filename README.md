@@ -76,6 +76,6 @@ If you use the scripts found in this repository, you can use the DOI provided by
   title = {MultiSim},
   author = {Lepauvre, Alex and Chu, Qian and Zeidman, Peter and Melloni, Lucia},
   year = {2025},
-  doi = {TBA},
+  doi = {https://doi.org/10.5281/zenodo.17231750},
 }
 ```
