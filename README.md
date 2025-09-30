@@ -67,3 +67,15 @@ https://alexlepauvre.github.io/meeg_simulator/tutorial/index.html
 - Temporal kernel: supply any causal kernel to shape the time-course of effects.
 
 - Effect size: Simulate multivariate effect at particular effect size to test the ability of your pipelines to retrieve it given the number of subjects and trials for each subject
+
+## How to cite us:
+If you use the scripts found in this repository, you can use the DOI provided by Zenodo to cite us. And here is a bibtex:
+
+```
+@article{LepauvreEtAl2024,
+  title = {COGITATE-iEEG-DATA-RELEASE},
+  author = {Lepauvre, Alex and Chu, Qian and Zeidman, Peter and Melloni, Lucia},
+  year = {2025},
+  doi = {TBA},
+}
+```
