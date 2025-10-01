@@ -18,10 +18,16 @@ Specifically, the toolbox allows to:
 
 ## Installation
 
-You can install the package using pip:
-
 ```bash
 pip install multisim-neuro
+```
+
+Or clone and install the development version:
+
+```bash
+git clone https://github.com/AlexLepauvre/multisim-neuro
+cd multisim-neuro
+pip install -e .[full]
 ```
 
 ## Usage Example
@@ -52,7 +58,9 @@ first_subject_data = sim.data[0]  # Access data for the first subject
 
 ## Documentation
 
-Documentation and tutorials are available at: <https://github.com/AlexLepauvre/multisim-neuro>
+Full class and method documentation are available at: <https://alexlepauvre.github.io/multisim-neuro/index.html>.
+
+Tutorials are available at: <https://alexlepauvre.github.io/multisim-neuro/tutorial/index.html>
 
 ## License
 
@@ -60,4 +68,13 @@ MultiSim is licensed under the MIT License.
 
 ## Citation
 
-If you use this toolbox in your research, please cite the accompanying paper (in prep).
+If you use the scripts found in this repository, you can use the DOI provided by Zenodo to cite us. And here is a bibtex:
+
+```bibtex
+@article{LepauvreEtAl2024,
+  title = {MultiSim},
+  author = {Lepauvre, Alex and Chu, Qian and Zeidman, Peter and Melloni, Lucia},
+  year = {2025},
+  doi = {https://doi.org/10.5281/zenodo.17231750},
+}
+```

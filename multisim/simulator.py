@@ -227,9 +227,12 @@ class Simulator:
                     f"Effect #{i}: must provide effect_size or effect_amp."
                 )
 
-            # now you don’t need the extra trace-based denominator:
             if "effect_size" in eff:
-                amp = float(eff["effect_size"]) * self.noise_std
+                # The amplitude scaler of the vector needs to be divided by two as the 
+                # random vector will be multiplied by 1 and -1 of the contrast vectors, 
+                # such that the distance between each category will be twice the length 
+                # the vector
+                amp = (float(eff["effect_size"]) * self.noise_std) / 2
             else:
                 amp = float(eff["effect_amp"]) / np.sqrt(self.n_channels)
 
