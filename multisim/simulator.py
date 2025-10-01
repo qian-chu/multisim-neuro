@@ -24,7 +24,7 @@ class Simulator:
         ================ ================================
         ``condition``    Column name in ``X``.
         ``windows``      List of ``(start, end)`` time pairs (seconds).
-        ``effect_size``  Mahalanobis distance (:math:`\Delta`).
+        ``effect_size``  Mahalanobis distance (:math:`\\Delta`).
         ``effect_amp``   Amplitude of β-weights directly.
         ================ ================================
 
@@ -67,7 +67,7 @@ class Simulator:
 
     .. math::
 
-        \Delta = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
+        \\Delta = \\frac{a}{\\sigma} \\cdot \\sqrt{v^T \\Sigma^{-1} v}
 
     where :math:`\\sigma` = ``noise_std``, :math:`\\Sigma` = ``ch_cov`` (channel covariance),
     and :math:`v` = channel pattern (unit vector across channels).
@@ -77,13 +77,13 @@ class Simulator:
 
     .. math::
 
-        \Delta = \\frac{a}{\\sigma}
+        \\Delta = \\frac{a}{\\sigma}
 
     so the amplitude we must inject is
 
     .. math::
 
-        a = \Delta\\sigma
+        a = \\Delta\\sigma
 
     If the user supplies ``effect_amp`` directly, that value is taken instead
     and the conversion above is skipped.
@@ -120,7 +120,9 @@ class Simulator:
     Samples   : 249
     Channels  : 64
     Conditions: 1 (category)
-    >>> sub_data = sim.data[0] # Data for first subject
+    >>> sub_data = sim.data[0] # Data for first subject (3D Numpy array)
+    >>> print(first_subject_data.shape)
+    (100, 64, 249)
     """
 
     def __init__(

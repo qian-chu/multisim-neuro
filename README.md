@@ -53,7 +53,8 @@ sim = Simulator(
     sfreq=250,
 )
 print(sim) # Overview of the simulation parameters
-first_subject_data = sim.data[0]  # Access data for the first subject
+first_subject_data = sim.data[0]  # Data for first subject (3D Numpy array)
+print(first_subject_data.shape)
 ```
 
 ## Documentation
