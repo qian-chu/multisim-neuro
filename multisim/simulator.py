@@ -230,9 +230,9 @@ class Simulator:
                 )
 
             if "effect_size" in eff:
-                # The amplitude scaler of the vector needs to be divided by two as the 
-                # random vector will be multiplied by 1 and -1 of the contrast vectors, 
-                # such that the distance between each category will be twice the length 
+                # The amplitude scaler of the vector needs to be divided by two as the
+                # random vector will be multiplied by 1 and -1 of the contrast vectors,
+                # such that the distance between each category will be twice the length
                 # the vector
                 amp = (float(eff["effect_size"]) * self.noise_std) / 2
             else:
