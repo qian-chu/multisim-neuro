@@ -5,17 +5,20 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "multisim-neuro"
 dynamic = ["version"]
-description = "A package for simulating time resolved data with multivariate effects"
+description = "Simulate realistic MEG/EEG data with ground-truth multivariate effects"
 authors = [
-    { name = "Alex Lepauvre", email = "alex.lepauvre@gmail.com" }
+    { name = "Alex Lepauvre", email = "alex.lepauvre@gmail.com" },
+    { name = "Qian Chu" },
+    { name = "Lucia Melloni" },
+    { name = "Peter Zeidman" }
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
 dependencies = ["numpy", "pandas"]
 
 [project.optional-dependencies]
-docs = ["mne", "eeglabio", "scikit-learn", "scipy", "pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython", "sphinxcontrib-bibtex", "myst-nb"]
 export = ["mne", "eeglabio"]
+docs = ["mne", "eeglabio", "scikit-learn", "pydata-sphinx-theme", "numpydoc", "nbsphinx", "ruff", "ipython", "sphinxcontrib-bibtex", "myst-nb"]
 dev = ["pytest"]
 
 [project.urls]

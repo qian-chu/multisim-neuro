@@ -1,9 +1,7 @@
 MultiSim tutorials
 ==================
 
-
-Here you can find tutorials on how to use the meg simulator
-
+Here you can find tutorials on how to use MultiSim.
 
 .. toctree::
    :maxdepth: 2
