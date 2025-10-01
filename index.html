@@ -320,8 +320,13 @@ It enables principled testing and validation of decoding pipelines, source recon
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>You can install the package using pip:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>multisim-neuro
+</pre></div>
+</div>
+<p>Or clone and install the development version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/AlexLepauvre/multisim-neuro
+<span class="nb">cd</span><span class="w"> </span>multisim-neuro
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>full<span class="o">]</span>
 </pre></div>
 </div>
 </section>
@@ -347,13 +352,15 @@ It enables principled testing and validation of decoding pipelines, source recon
     <span class="n">sfreq</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span> <span class="c1"># Overview of the simulation parameters</span>
-<span class="n">first_subject_data</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Access data for the first subject</span>
+<span class="n">first_subject_data</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Data for first subject (3D Numpy array)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first_subject_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
-<p>Documentation and tutorials are available at: <a class="github reference external" href="https://github.com/AlexLepauvre/multisim-neuro">AlexLepauvre/multisim-neuro</a></p>
+<p>Full class and method documentation are available at: <a class="reference external" href="https://alexlepauvre.github.io/multisim-neuro/index.html">https://alexlepauvre.github.io/multisim-neuro/index.html</a>.</p>
+<p>Tutorials are available at: <a class="reference external" href="https://alexlepauvre.github.io/multisim-neuro/tutorial/index.html">https://alexlepauvre.github.io/multisim-neuro/tutorial/index.html</a></p>
 </section>
 <section id="license">
 <h2>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h2>
@@ -361,7 +368,15 @@ It enables principled testing and validation of decoding pipelines, source recon
 </section>
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading">#</a></h2>
-<p>If you use this toolbox in your research, please cite the accompanying paper (in prep).</p>
+<p>If you use the scripts found in this repository, you can use the DOI provided by Zenodo to cite us. And here is a bibtex:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">LepauvreEtAl2024</span><span class="p">,</span>
+<span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{MultiSim}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Lepauvre, Alex and Chu, Qian and Zeidman, Peter and Melloni, Lucia}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2025}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.5281/zenodo.17231750}</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 </section>
 <div class="toctree-wrapper compound">
