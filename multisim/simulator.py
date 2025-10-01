@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import halfnorm
 import os
 from typing import List, Dict, Optional, Sequence
 
@@ -250,8 +251,15 @@ class Simulator:
 
         # 2. Loop through each effect:
         for eff in self.effects:
-            # subject‑specific amplitude
-            amp = self.rng.normal(loc=eff["base_amp"], scale=self.intersub_noise_std)
+            if self.intersub_noise_std is not None:
+                # Adjusting sigma to enforce positivity of the finale mean of the half normal distribution
+                sigma = min(self.intersub_noise_std, eff["base_amp"] * np.sqrt(np.pi/2))
+                # Adjusting the loc of the half normal distribution to ensure that the mean of the distribution matches the expected amplitude
+                mu = eff["base_amp"] - sigma * np.sqrt(2/np.pi)
+                amp = halfnorm.rvs(loc=mu, scale=sigma, random_state=self.rng)
+            else:
+                amp = eff["base_amp"]
+                
             # generate random pattern
             v = self.rng.standard_normal(self.n_channels)
             # Normalize it to 1 Mahalanobis distance:

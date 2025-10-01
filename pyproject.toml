@@ -14,7 +14,7 @@ authors = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-dependencies = ["numpy", "pandas"]
+dependencies = ["scipy", "pandas"]
 
 [project.optional-dependencies]
 export = ["mne", "eeglabio"]
