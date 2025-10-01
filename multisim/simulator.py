@@ -51,7 +51,7 @@ class Simulator:
         Standard deviation of between-subject variability in effect amplitude. Defaults to 0.
     random_state : int | numpy.random.Generator | None
         Seed or generator for reproducibility.
-    
+
     Attributes
     ----------
     data : list of ndarray, shape (n_epochs, n_channels, n_samples)
@@ -87,7 +87,7 @@ class Simulator:
 
     If the user supplies ``effect_amp`` directly, that value is taken instead
     and the conversion above is skipped.
-    
+
     References
     ----------
     .. [1] Friston, K., & Zeidman, P. "DEMO_CVA_RSA.m", Statistical Parametric Mapping (SPM).
@@ -103,7 +103,7 @@ class Simulator:
     >>> # Define experimental design: 100 trials, 1 condition
     >>> X = pd.DataFrame(np.random.randn(100, 1), columns=["category"])
     >>> effects = [{"condition": "category", "windows": [0.1, 0.3], "effect_size": 0.5}]
-    
+
     >>> sim = Simulator(
         X,
         effects,
